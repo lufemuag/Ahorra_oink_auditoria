@@ -1,0 +1,28 @@
+{
+  "name": "Ahorra Oink",
+  "short_name": "Ahorra Oink",
+  "description": "Tu aplicación de gestión financiera personal. Controla tus gastos, ahorra dinero y alcanza tus metas financieras.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#3B8048",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/ahorra-oink-icon.svg",
+      "sizes": "64x64",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["finance", "productivity", "utilities"],
+  "lang": "es",
+  "dir": "ltr"
+}
+

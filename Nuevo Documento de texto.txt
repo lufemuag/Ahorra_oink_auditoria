@@ -1,0 +1,68 @@
+
+Páginas de la Web – Ahorra Oink
+Inicio (Dashboard)
+•	Resumen rápido: ingresos, gastos, metas activas.
+•	Gráficas interactivas con balance financiero.
+•	Notificaciones destacadas (ej. recordatorios o alertas de gastos).
+•	Acceso directo a registrar ingresos/gastos o crear metas.
+
+Perfil de Usuario
+•	Datos personales: correo, contraseña, información básica.
+•	Configuración de notificaciones (activar/desactivar).
+•	Logros y recompensas desbloqueadas.
+•	Botón de Cerrar sesión.
+
+Información (Educativa)
+•	Explicación de los métodos de ahorro (50/30/20, ahorro fijo, redondeo, etc.).
+•	Consejos prácticos para organizar finanzas.
+•	Sección interactiva para que el usuario elija un método recomendado.
+•	Enlace a Términos y Condiciones.
+
+Otras páginas funcionales (integradas con las 3 principales)
+•	Registro e Inicio de Sesión → acceso inicial antes de entrar al sistema.
+•	Recuperar Contraseña → en caso de olvido de credenciales.
+•	Gestión de Finanzas (Ingresos y Gastos) → formulario + historial en una misma página, con pestañas.
+•	Metas de Ahorro → crear, editar, eliminar + visualizar progreso.
+•	Estadísticas y Reportes → gráficos detallados, descargables.
+
+En pocas palabras
+Las páginas principales visibles en el menú o navegación superior serían:
+1.	Inicio
+2.	Perfil
+3.	Información
+Y desde el Inicio (Dashboard) se enlazarían las funciones de: ingresos, gastos, metas, reportes y notificaciones.
+
+Descripción del Proyecto Web – Ahorra Oink
+Ahorra Oink es una aplicación web educativa y de apoyo financiero, cuyo objetivo es ayudar a los usuarios a gestionar sus ingresos, gastos y metas de ahorro de forma sencilla, segura y motivadora.
+No sustituye a un banco ni procesa transacciones reales, sino que funciona como un asistente personal de finanzas accesible desde cualquier navegador moderno.
+
+Objetivos del Proyecto
+•	Facilitar el registro y autenticación de usuarios para un acceso seguro.
+•	Permitir la gestión de ingresos y gastos con clasificación en categorías.
+•	Ofrecer reportes financieros y gráficas interactivas para visualizar balances.
+•	Proporcionar métodos de ahorro claros y adaptados (50/30/20, ahorro fijo, redondeo, etc.).
+•	Fomentar la disciplina con notificaciones, recordatorios y un sistema de logros.
+•	Crear una interfaz intuitiva y responsiva, pensada para jóvenes y usuarios con conocimientos básicos en tecnología.
+
+Funcionalidades Principales (RF)
+1.	Registro y autenticación de usuarios con validación de credenciales.
+2.	Gestión de perfil de usuario (correo, contraseña, datos adicionales).
+3.	Gestión de gastos: registro, edición y eliminación, con alertas si se supera un límite.
+4.	Gestión de ingresos: registro de montos, fuentes y frecuencia.
+5.	Sugerencias de métodos de ahorro según hábitos financieros.
+6.	Seguimiento del progreso con gráficas y reportes.
+7.	Notificaciones automáticas para recordar aportes o advertir gastos inusuales.
+8.	Sistema de logros y recompensas virtuales para gamificar el ahorro.
+________________________________________
+ Requisitos No Funcionales (RNF)
+•	Rendimiento: carga en menos de 4s y operaciones críticas en menos de 10s.
+•	Seguridad: conexiones HTTPS, contraseñas encriptadas con bcrypt, validación de sesiones.
+•	Usabilidad: interfaz responsiva e intuitiva, con ayudas contextuales y sección educativa.
+•	Mantenibilidad: documentación técnica y buenas prácticas con React (frontend) y Django/Flask (backend).
+•	Portabilidad: funcionamiento en navegadores modernos (Chrome, Firefox, Edge).
+•	Cors: buen manejo cors un solo archivo y se importa ese de ser necesario a los demás endponts
+Porfa por ahora solo trabajemos en el frontend todo con localstorageo algo similar para guardar todos los datos
+
+Diseño: colores #3B8048, #0C1A0E, #FED16A, #FFF4A4 porfa úsalos de forma armónica quiero un diseño bonito moderno con efectos y movimientos 
+
+Puedes hacer esto un md tipo to-do ¿para hacerlo todo paso a paso?

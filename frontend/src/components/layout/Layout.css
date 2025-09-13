@@ -1,0 +1,29 @@
+.app-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--light-gray);
+}
+
+.main-content {
+  flex: 1;
+  padding: var(--spacing-xl) 0;
+  min-height: calc(100vh - 70px);
+}
+
+.main-content .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-md);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .main-content {
+    padding: var(--spacing-lg) 0;
+  }
+
+  .main-content .container {
+    padding: 0 var(--spacing-sm);
+  }
+}

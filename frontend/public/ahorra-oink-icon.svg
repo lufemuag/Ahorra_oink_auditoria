@@ -1,0 +1,52 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fondo circular -->
+  <circle cx="32" cy="32" r="30" fill="#3B8048" stroke="#0C1A0E" stroke-width="2"/>
+  
+  <!-- Cuerpo del cerdito -->
+  <ellipse cx="32" cy="38" rx="18" ry="16" fill="#FED16A"/>
+  
+  <!-- Cabeza del cerdito -->
+  <circle cx="32" cy="22" r="12" fill="#FED16A"/>
+  
+  <!-- Hocico -->
+  <ellipse cx="32" cy="26" rx="6" ry="4" fill="#FFF4A4"/>
+  
+  <!-- Nariz -->
+  <ellipse cx="32" cy="28" rx="2" ry="1.5" fill="#0C1A0E"/>
+  
+  <!-- Ojos -->
+  <circle cx="28" cy="20" r="2" fill="#0C1A0E"/>
+  <circle cx="36" cy="20" r="2" fill="#0C1A0E"/>
+  
+  <!-- Orejas -->
+  <ellipse cx="24" cy="16" rx="3" ry="5" fill="#FED16A" transform="rotate(-20 24 16)"/>
+  <ellipse cx="40" cy="16" rx="3" ry="5" fill="#FED16A" transform="rotate(20 40 16)"/>
+  
+  <!-- Patas -->
+  <ellipse cx="26" cy="52" rx="3" ry="4" fill="#FED16A"/>
+  <ellipse cx="38" cy="52" rx="3" ry="4" fill="#FED16A"/>
+  
+  <!-- Cola -->
+  <path d="M14 35 Q8 30 10 25" stroke="#FED16A" stroke-width="3" fill="none" stroke-linecap="round"/>
+  
+  <!-- Alcancía -->
+  <rect x="45" y="25" width="12" height="16" rx="2" fill="#3B8048"/>
+  <rect x="46" y="26" width="10" height="14" rx="1" fill="#0C1A0E"/>
+  
+  <!-- Ranura de monedas -->
+  <rect x="49" y="20" width="4" height="8" rx="2" fill="#0C1A0E"/>
+  
+  <!-- Monedas saliendo -->
+  <circle cx="51" cy="18" r="1.5" fill="#FED16A"/>
+  <circle cx="53" cy="16" r="1.5" fill="#FED16A"/>
+  <circle cx="49" cy="16" r="1.5" fill="#FED16A"/>
+  
+  <!-- Detalles de la alcancía -->
+  <circle cx="48" cy="30" r="1" fill="#FED16A"/>
+  <circle cx="52" cy="32" r="1" fill="#FED16A"/>
+  <circle cx="50" cy="35" r="1" fill="#FED16A"/>
+  
+  <!-- Símbolo de dinero en la alcancía -->
+  <text x="51" y="40" font-family="Arial, sans-serif" font-size="6" font-weight="bold" fill="#FED16A" text-anchor="middle">$</text>
+</svg>
+
