@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { FaEye, FaEyeSlash, FaPiggyBank, FaUser, FaLock } from 'react-icons/fa';
+import { FaEye, FaEyeSlash, FaPiggyBank, FaUser, FaLock, FaCoins } from 'react-icons/fa';
 import ForgotPasswordModal from '../../components/auth/ForgotPasswordModal';
 import './Auth.css';
 
@@ -102,106 +102,113 @@ const Login = () => {
 
   return (
     <div className="auth-container">
-      <div className="auth-card animate-fade-in">
-        {/* Header */}
-        <div className="auth-header">
-          <div className="auth-logo">
-            <FaPiggyBank className="logo-icon animate-bounce" />
-            <h1>Ahorra Oink</h1>
-          </div>
-          <h2>Iniciar Sesión</h2>
-          <p>¡Bienvenido de vuelta! Ingresa a tu cuenta.</p>
+      {/* Header */}
+      <div className="header">
+        <div className="logo">
+          <span className="logo-box">AHORRA</span>
+          <span className="logo-box">OINK</span>
         </div>
+        <div className="coins-icon">
+          <FaCoins />
+        </div>
+      </div>
 
-        {/* Error Message */}
-        {error && (
-          <div className="error-message animate-slide-in">
-            <p>{error}</p>
-          </div>
-        )}
+      {/* Main container */}
+      <div className="main-container">
+        <div className="login-wrapper">
+          {/* Sección izquierda - Formulario */}
+          <div className="login-section">
+            <h2 className="login-title">Iniciar sesión</h2>
+            <p className="login-subtitle">Oink te espera para seguir ahorrando</p>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="auth-form">
-          <div className="form-group">
-            <label htmlFor="username" className="form-label">
-              <FaUser className="label-icon" />
-              Usuario
-            </label>
-            <input
-              type="text"
-              id="username"
-              name="username"
-              value={formData.username}
-              onChange={handleChange}
-              className={`form-input ${errors.username ? 'error' : ''}`}
-              placeholder="Tu nombre de usuario"
-              autoComplete="username"
-            />
-            {errors.username && <span className="form-error">{errors.username}</span>}
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="password" className="form-label">
-              <FaLock className="label-icon" />
-              Contraseña
-            </label>
-            <div className="password-input-wrapper">
-              <input
-                type={showPassword ? 'text' : 'password'}
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                className={`form-input ${errors.password ? 'error' : ''}`}
-                placeholder="Tu contraseña"
-                autoComplete="current-password"
-              />
-              <button
-                type="button"
-                className="password-toggle"
-                onClick={() => setShowPassword(!showPassword)}
-                aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
-              >
-                {showPassword ? <FaEyeSlash /> : <FaEye />}
-              </button>
-            </div>
-            {errors.password && <span className="form-error">{errors.password}</span>}
-          </div>
-
-          <div className="form-actions">
-            <button 
-              type="button"
-              className="forgot-link"
-              onClick={() => setShowForgotPassword(true)}
-            >
-              ¿Olvidaste tu contraseña?
-            </button>
-          </div>
-
-          <button 
-            type="submit" 
-            className="btn btn-primary btn-lg"
-            disabled={isSubmitting || loading}
-          >
-            {isSubmitting ? (
-              <>
-                <div className="loader small"></div>
-                Iniciando...
-              </>
-            ) : (
-              'Iniciar Sesión'
+            {/* Error Message */}
+            {error && (
+              <div className="error-message">
+                <p>{error}</p>
+              </div>
             )}
-          </button>
-        </form>
 
-        {/* Footer */}
-        <div className="auth-footer">
-          <p>
-            ¿No tienes una cuenta?{' '}
-            <Link to="/register" className="auth-link">
-              Regístrate aquí
-            </Link>
-          </p>
+            <form onSubmit={handleSubmit}>
+              <div className="form-group">
+                <label className="form-label" htmlFor="username">Correo</label>
+                <input
+                  type="text"
+                  id="username"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  className={`form-input ${errors.username ? 'error' : ''}`}
+                  placeholder="Tu correo o usuario"
+                  autoComplete="username"
+                />
+                {errors.username && <span className="form-error">{errors.username}</span>}
+              </div>
+
+              <div className="form-group">
+                <label className="form-label" htmlFor="password">Contraseña</label>
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  id="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className={`form-input ${errors.password ? 'error' : ''}`}
+                  placeholder="Tu contraseña"
+                  autoComplete="current-password"
+                />
+                <button 
+                  type="button"
+                  className="forgot-password"
+                  onClick={() => setShowForgotPassword(true)}
+                >
+                  ¿Olvidaste tu contraseña?
+                </button>
+                {errors.password && <span className="form-error">{errors.password}</span>}
+              </div>
+
+              <button 
+                type="submit" 
+                className="login-button"
+                disabled={isSubmitting || loading}
+              >
+                {isSubmitting ? (
+                  <>
+                    <div className="loader small"></div>
+                    Iniciando...
+                  </>
+                ) : (
+                  'Iniciar sesión'
+                )}
+              </button>
+            </form>
+
+            <div className="register-link">
+              ¿No tienes una cuenta? <Link to="/register">Regístrate</Link>
+            </div>
+          </div>
+
+          {/* Sección derecha - Ilustración del cerdo */}
+          <div className="character-section">
+            <div className="pig-character">
+              <div className="pig-body">
+                <div className="pig-head">
+                  <div className="pig-hat"></div>
+                  <div className="pig-ear left"></div>
+                  <div className="pig-ear right"></div>
+                  <div className="pig-eyes">
+                    <div className="pig-eye left"></div>
+                    <div className="pig-eye right"></div>
+                  </div>
+                  <div className="pig-glasses"></div>
+                  <div className="pig-snout"></div>
+                </div>
+                <div className="pig-arm left"></div>
+                <div className="pig-arm right"></div>
+                <div className="pig-leg left"></div>
+                <div className="pig-leg right"></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 

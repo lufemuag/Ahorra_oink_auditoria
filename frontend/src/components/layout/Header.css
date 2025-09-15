@@ -1,5 +1,5 @@
 .header {
-  background: var(--gradient-primary);
+  background: #fdd835;
   box-shadow: var(--shadow-md);
   position: sticky;
   top: 0;
@@ -9,7 +9,7 @@
 .header-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 var(--spacing-md);
+  padding: 0 var(--spacing-lg);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -85,6 +85,103 @@
 
 .nav-icon {
   font-size: var(--font-size-lg);
+}
+
+/* Coins Menu - Desktop */
+.desktop-coins-menu {
+  position: relative;
+}
+
+.coins-menu-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--white);
+  border: none;
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-weight: 500;
+}
+
+.coins-menu-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.coins-icon {
+  font-size: var(--font-size-lg);
+  color: var(--primary-yellow);
+}
+
+.chevron-icon {
+  font-size: var(--font-size-sm);
+  transition: transform var(--transition-fast);
+}
+
+.chevron-icon.rotated {
+  transform: rotate(180deg);
+}
+
+.coins-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: var(--spacing-sm);
+  min-width: 220px;
+  z-index: 1000;
+  margin-top: var(--spacing-sm);
+}
+
+.coins-dropdown::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  right: 20px;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 8px solid var(--white);
+}
+
+.coins-menu-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  text-decoration: none;
+  color: var(--dark-green);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+  font-weight: 500;
+}
+
+.coins-menu-item:hover {
+  background: var(--light-gray);
+  color: var(--primary-green);
+  transform: translateX(4px);
+}
+
+.coins-menu-icon {
+  font-size: var(--font-size-md);
+  width: 20px;
+  text-align: center;
+}
+
+.coins-menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999;
+  background: transparent;
 }
 
 /* User Menu - Desktop */
@@ -264,7 +361,8 @@
   }
 
   .desktop-nav,
-  .desktop-user {
+  .desktop-user,
+  .desktop-coins-menu {
     display: none;
   }
 

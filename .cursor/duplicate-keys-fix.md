@@ -238,3 +238,6 @@ El problema de claves duplicadas en `NotificationsModal` ha sido **completamente
 La aplicación ahora genera IDs únicos de forma consistente y confiable, eliminando los warnings de React y asegurando el correcto funcionamiento de todos los componentes que renderizan listas. 🔧✅
 
 
+
+
+

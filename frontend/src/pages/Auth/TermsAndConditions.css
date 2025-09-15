@@ -1,0 +1,282 @@
+/* Página de Términos y Condiciones - Ahorra Oink */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.terms-container {
+  font-family: 'Arial', sans-serif;
+  background: #2d5016;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  color: #333;
+  position: relative;
+}
+
+/* Header */
+.terms-header {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 10;
+  background-color: #f4d03f !important;
+  background: #f4d03f !important;
+  padding: 15px 20px !important;
+  border-radius: 10px;
+}
+
+.terms-logo {
+  color: #2d5016;
+  font-size: 20px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: flex;
+  gap: 5px;
+}
+
+.logo-box {
+  border: 2px solid #2d5016;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: #f7f3a0;
+}
+
+/* Main content */
+.terms-main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 80px 20px 120px 20px;
+  position: relative;
+}
+
+.terms-card {
+  background-color: #f7f3a0;
+  border-radius: 25px;
+  padding: 40px;
+  max-width: 800px;
+  width: 100%;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  position: relative;
+  z-index: 5;
+  overflow: visible;
+}
+
+.terms-title {
+  color: #2d5016;
+  font-size: 32px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 30px;
+  border-bottom: 3px solid #2d5016;
+  padding-bottom: 15px;
+}
+
+.terms-content {
+  line-height: 1.6;
+}
+
+.terms-section {
+  margin-bottom: 25px;
+}
+
+.section-title {
+  color: #2d5016;
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 12px;
+  margin-top: 20px;
+}
+
+.subsection-title {
+  color: #2d5016;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  margin-top: 15px;
+}
+
+.terms-content p {
+  color: #333;
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+
+.terms-content strong {
+  color: #2d5016;
+  font-weight: 600;
+}
+
+.terms-list {
+  margin-left: 20px;
+  margin-bottom: 15px;
+}
+
+.terms-list li {
+  color: #333;
+  font-size: 15px;
+  margin-bottom: 6px;
+}
+
+.terms-contact {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 2px solid #5d8a66;
+}
+
+.terms-contact p {
+  text-align: center;
+  color: #333;
+  font-size: 15px;
+}
+
+.terms-contact strong {
+  color: #2d5016;
+}
+
+/* Pig illustrations */
+.terms-content {
+  position: relative;
+  overflow: visible;
+}
+
+.pig-left,
+.pig-right {
+  position: absolute;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.pig-left {
+  top: -70px;
+  left: -70px;
+}
+
+.pig-right {
+  bottom: -70px;
+  right: -70px;
+}
+
+.pig-image {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+}
+
+/* Footer */
+.terms-footer {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+
+.back-button {
+  background: #4a7c59;
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 25px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.back-button:hover {
+  background: #2d5016;
+  transform: translateY(-2px);
+  box-shadow: 0 7px 20px rgba(0, 0, 0, 0.3);
+}
+
+.back-button:active {
+  transform: translateY(0);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .terms-main {
+    padding: 60px 20px 100px 20px;
+  }
+  
+  .pig-left,
+  .pig-right {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .terms-header {
+    position: relative;
+    top: auto;
+    left: auto;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .terms-main {
+    padding: 20px 15px 80px 15px;
+  }
+  
+  .terms-card {
+    padding: 30px 25px;
+  }
+  
+  .terms-title {
+    font-size: 24px;
+  }
+  
+  .section-title {
+    font-size: 18px;
+  }
+  
+  .terms-content p,
+  .terms-list li {
+    font-size: 14px;
+  }
+  
+  .back-button {
+    padding: 12px 25px;
+    font-size: 14px;
+  }
+}
+
+
+@media (max-width: 480px) {
+  .terms-card {
+    padding: 20px 15px;
+  }
+  
+  .terms-title {
+    font-size: 20px;
+  }
+  
+  .section-title {
+    font-size: 16px;
+  }
+  
+  .terms-content p,
+  .terms-list li {
+    font-size: 13px;
+  }
+  
+  .terms-header {
+    padding: 15px;
+  }
+  
+  .terms-logo {
+    font-size: 16px;
+  }
+  
+  .logo-box {
+    padding: 3px 6px;
+    font-size: 14px;
+  }
+}

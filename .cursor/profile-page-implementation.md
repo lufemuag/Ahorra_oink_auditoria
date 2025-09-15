@@ -213,3 +213,6 @@ La página de perfil de usuario está **completamente implementada** con todas l
 La implementación incluye un sistema robusto de logros, validaciones completas, diseño responsivo y una experiencia de usuario optimizada. Los usuarios pueden gestionar completamente su perfil, configurar sus preferencias, ver su progreso en logros y cerrar sesión de manera segura. 🎯✅
 
 
+
+
+

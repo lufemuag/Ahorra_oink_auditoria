@@ -228,3 +228,6 @@ El problema de persistencia de notificaciones ha sido **completamente resuelto**
 La aplicación ahora maneja las notificaciones de forma inteligente, manteniendo los cambios del usuario durante la sesión del modal y actualizando el estado apropiadamente cuando se cierra y reabre. 🔧✅
 
 
+
+
+

@@ -10,7 +10,13 @@ import {
   FaSignOutAlt,
   FaPiggyBank,
   FaUserShield,
-  FaLifeRing
+  FaLifeRing,
+  FaCoins,
+  FaTrophy,
+  FaChartLine,
+  FaBook,
+  FaCog,
+  FaChevronDown
 } from 'react-icons/fa';
 import './Header.css';
 
@@ -18,30 +24,49 @@ const Header = () => {
   const { user, logout, isAuthenticated, isAdmin } = useAuth();
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isCoinsMenuOpen, setIsCoinsMenuOpen] = useState(false);
 
-  const navigation = [
-    { name: 'Inicio', href: '/dashboard', icon: FaHome },
-    { name: 'Perfil', href: '/profile', icon: FaUser },
-    { name: 'Información', href: '/information', icon: FaInfoCircle },
-    { name: 'Soporte', href: '/support', icon: FaLifeRing },
+  // Ya no necesitamos navegación tradicional, solo el menú de monedas
+
+  const coinsMenuItems = [
+    { name: 'Logros', href: '/achievements', icon: FaTrophy },
+    { name: 'Gastos', href: '/expenses', icon: FaChartLine },
+    { name: 'Estadísticas', href: '/statistics', icon: FaChartLine },
+    { name: 'Metodologías', href: '/methodologies', icon: FaBook },
+    { name: 'Configuración', href: '/settings', icon: FaCog },
+    { name: 'Cerrar sesión', href: '#', icon: FaSignOutAlt, action: 'logout' }
   ];
-
-  // Agregar enlace de admin solo para administradores
-  if (isAdmin && isAdmin()) {
-    navigation.push({ name: 'Admin', href: '/admin', icon: FaUserShield });
-  }
 
   const handleLogout = () => {
     logout();
     setIsMobileMenuOpen(false);
+    setIsCoinsMenuOpen(false);
   };
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
+    setIsCoinsMenuOpen(false);
   };
 
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
+  };
+
+  const toggleCoinsMenu = () => {
+    setIsCoinsMenuOpen(!isCoinsMenuOpen);
+    setIsMobileMenuOpen(false);
+  };
+
+  const closeCoinsMenu = () => {
+    setIsCoinsMenuOpen(false);
+  };
+
+  const handleCoinsMenuItemClick = (item) => {
+    if (item.action === 'logout') {
+      handleLogout();
+    } else {
+      closeCoinsMenu();
+    }
   };
 
   if (!isAuthenticated) {
@@ -57,35 +82,40 @@ const Header = () => {
           <span className="logo-text">Ahorra Oink</span>
         </Link>
 
-        {/* Navigation - Desktop */}
-        <nav className="header-nav desktop-nav">
-          {navigation.map((item) => {
-            const Icon = item.icon;
-            const isActive = location.pathname === item.href;
-            
-            return (
-              <Link
-                key={item.name}
-                to={item.href}
-                className={`nav-link ${isActive ? 'active' : ''}`}
-              >
-                <Icon className="nav-icon" />
-                <span>{item.name}</span>
-              </Link>
-            );
-          })}
-        </nav>
+        {/* Navigation removed - only coins menu */}
 
-        {/* User Menu - Desktop */}
-        <div className="header-user desktop-user">
-          <div className="user-info">
-            <span className="user-greeting">¡Hola, {user?.firstName || 'Usuario'}!</span>
-            <span className="user-email">@{user?.username || 'usuario'}</span>
-          </div>
-          <button onClick={handleLogout} className="logout-btn" title="Cerrar sesión">
-            <FaSignOutAlt />
+        {/* Coins Menu - Desktop */}
+        <div className="header-coins-menu desktop-coins-menu">
+          <button 
+            className="coins-menu-btn"
+            onClick={toggleCoinsMenu}
+            title="Menú de opciones"
+          >
+            <FaCoins className="coins-icon" />
+            <FaChevronDown className={`chevron-icon ${isCoinsMenuOpen ? 'rotated' : ''}`} />
           </button>
+
+          {isCoinsMenuOpen && (
+            <div className="coins-dropdown">
+              {coinsMenuItems.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.name}
+                    to={item.href}
+                    className="coins-menu-item"
+                    onClick={() => handleCoinsMenuItemClick(item)}
+                  >
+                    <Icon className="coins-menu-icon" />
+                    <span>{item.name}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
         </div>
+
+        {/* User info removed - only coins menu */}
 
         {/* Mobile Menu Button */}
         <button 
@@ -97,7 +127,7 @@ const Header = () => {
         </button>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu - Simplified */}
       <div className={`mobile-menu ${isMobileMenuOpen ? 'open' : ''}`}>
         <div className="mobile-user-info">
           <div className="user-avatar">
@@ -110,16 +140,15 @@ const Header = () => {
         </div>
 
         <nav className="mobile-nav">
-          {navigation.map((item) => {
+          {coinsMenuItems.map((item) => {
             const Icon = item.icon;
-            const isActive = location.pathname === item.href;
             
             return (
               <Link
                 key={item.name}
                 to={item.href}
-                className={`mobile-nav-link ${isActive ? 'active' : ''}`}
-                onClick={closeMobileMenu}
+                className="mobile-nav-link"
+                onClick={() => handleCoinsMenuItemClick(item)}
               >
                 <Icon className="nav-icon" />
                 <span>{item.name}</span>
@@ -127,16 +156,16 @@ const Header = () => {
             );
           })}
         </nav>
-
-        <button onClick={handleLogout} className="mobile-logout-btn">
-          <FaSignOutAlt className="nav-icon" />
-          <span>Cerrar Sesión</span>
-        </button>
       </div>
 
       {/* Overlay */}
       {isMobileMenuOpen && (
         <div className="mobile-menu-overlay" onClick={closeMobileMenu} />
+      )}
+
+      {/* Coins Menu Overlay */}
+      {isCoinsMenuOpen && (
+        <div className="coins-menu-overlay" onClick={closeCoinsMenu} />
       )}
     </header>
   );

@@ -6,12 +6,13 @@ import Layout from './components/layout/Layout';
 import Login from './pages/Auth/Login';
 import Register from './pages/Auth/Register';
 import ResetPassword from './pages/Auth/ResetPassword';
+import TermsAndConditions from './pages/Auth/TermsAndConditions';
 import Dashboard from './pages/Dashboard/Dashboard';
-import Transactions from './pages/Transactions/Transactions';
-import Profile from './pages/Profile/Profile';
-import Information from './pages/Information/Information';
-import AdminDashboard from './pages/Admin/AdminDashboard';
-import Support from './pages/Support/Support';
+import Achievements from './pages/Achievements/Achievements';
+import Expenses from './pages/Expenses/Expenses';
+import Statistics from './pages/Statistics/Statistics';
+import Methodologies from './pages/Methodologies/Methodologies';
+import Settings from './pages/Settings/Settings';
 import './styles/globals.css';
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
             
             {/* Rutas protegidas */}
             <Route 
@@ -37,57 +39,58 @@ function App() {
               } 
             />
             
-            <Route 
-              path="/transactions" 
-              element={
-                <ProtectedRoute>
-                  <Layout>
-                    <Transactions />
-                  </Layout>
-                </ProtectedRoute>
-              } 
-            />
+            {/* Solo páginas del coins-menu */}
             
-            {/* Placeholder para otras páginas protegidas */}
             <Route 
-              path="/profile" 
+              path="/achievements" 
               element={
                 <ProtectedRoute>
                   <Layout>
-                    <Profile />
+                    <Achievements />
                   </Layout>
                 </ProtectedRoute>
               } 
             />
             
             <Route 
-              path="/information" 
+              path="/expenses" 
               element={
                 <ProtectedRoute>
                   <Layout>
-                    <Information />
+                    <Expenses />
                   </Layout>
                 </ProtectedRoute>
               } 
             />
             
             <Route 
-              path="/support" 
+              path="/statistics" 
               element={
                 <ProtectedRoute>
                   <Layout>
-                    <Support />
+                    <Statistics />
                   </Layout>
                 </ProtectedRoute>
               } 
             />
             
             <Route 
-              path="/admin" 
+              path="/methodologies" 
               element={
                 <ProtectedRoute>
                   <Layout>
-                    <AdminDashboard />
+                    <Methodologies />
+                  </Layout>
+                </ProtectedRoute>
+              } 
+            />
+            
+            <Route 
+              path="/settings" 
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <Settings />
                   </Layout>
                 </ProtectedRoute>
               } 

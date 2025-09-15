@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { 
   FaEye, 
   FaEyeSlash, 
-  FaPiggyBank, 
+  FaCoins, 
   FaUser, 
   FaUserTag, 
   FaLock 
@@ -21,6 +21,7 @@ const Register = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [acceptTerms, setAcceptTerms] = useState(false);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   
@@ -95,6 +96,10 @@ const Register = () => {
       newErrors.confirmPassword = 'Las contraseñas no coinciden';
     }
 
+    if (!acceptTerms) {
+      newErrors.acceptTerms = 'Debes aceptar los términos y condiciones';
+    }
+
     return newErrors;
   };
 
@@ -129,7 +134,7 @@ const Register = () => {
   if (loading && !isSubmitting) {
     return (
       <div className="auth-container">
-        <div className="auth-card">
+        <div className="main-container">
           <div className="loader"></div>
           <p>Cargando...</p>
         </div>
@@ -139,162 +144,137 @@ const Register = () => {
 
   return (
     <div className="auth-container">
-      <div className="auth-card animate-fade-in">
-        {/* Header */}
-        <div className="auth-header">
-          <div className="auth-logo">
-            <FaPiggyBank className="logo-icon animate-bounce" />
-            <h1>Ahorra Oink</h1>
-          </div>
-          <h2>Crear Cuenta</h2>
-          <p>¡Únete a Ahorra Oink y comienza a ahorrar hoy!</p>
+      {/* Header */}
+      <div className="header">
+        <div className="logo">
+          <span className="logo-box">AHORRA</span>
+          <span className="logo-box">OINK</span>
         </div>
+        <div className="coins-icon">
+          <FaCoins />
+        </div>
+      </div>
 
-        {/* Error Message */}
-        {error && (
-          <div className="error-message animate-slide-in">
-            <p>{error}</p>
-          </div>
-        )}
-
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="auth-form">
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="firstName" className="form-label">
-                <FaUser className="label-icon" />
-                Nombre
-              </label>
-              <input
-                type="text"
-                id="firstName"
-                name="firstName"
-                value={formData.firstName}
-                onChange={handleChange}
-                className={`form-input ${errors.firstName ? 'error' : ''}`}
-                placeholder="Tu nombre"
-                autoComplete="given-name"
-              />
-              {errors.firstName && <span className="form-error">{errors.firstName}</span>}
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="lastName" className="form-label">
-                <FaUser className="label-icon" />
-                Apellido
-              </label>
-              <input
-                type="text"
-                id="lastName"
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleChange}
-                className={`form-input ${errors.lastName ? 'error' : ''}`}
-                placeholder="Tu apellido"
-                autoComplete="family-name"
-              />
-              {errors.lastName && <span className="form-error">{errors.lastName}</span>}
+      {/* Main container */}
+      <div className="main-container">
+        <div className="login-wrapper">
+          {/* Sección izquierda - Ilustración del cerdo */}
+          <div className="character-section">
+            <div className="pig-character">
+              <div className="pig-body">
+                <div className="pig-head">
+                  <div className="pig-hat"></div>
+                  <div className="pig-ear left"></div>
+                  <div className="pig-ear right"></div>
+                  <div className="pig-eyes">
+                    <div className="pig-eye left"></div>
+                    <div className="pig-eye right"></div>
+                  </div>
+                  <div className="pig-glasses"></div>
+                  <div className="pig-snout"></div>
+                </div>
+                <div className="pig-arm left"></div>
+                <div className="pig-arm right"></div>
+                <div className="pig-leg left"></div>
+                <div className="pig-leg right"></div>
+              </div>
             </div>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="username" className="form-label">
-              <FaUserTag className="label-icon" />
-              Nombre de Usuario
-            </label>
-            <input
-              type="text"
-              id="username"
-              name="username"
-              value={formData.username}
-              onChange={handleChange}
-              className={`form-input ${errors.username ? 'error' : ''}`}
-              placeholder="tu_usuario123"
-              autoComplete="username"
-            />
-            {errors.username && <span className="form-error">{errors.username}</span>}
-          </div>
+          {/* Sección derecha - Formulario */}
+          <div className="login-section">
+            <h2 className="login-title">Crea tu cuenta</h2>
+            <p className="login-subtitle">para iniciar a ahorrar con Oink</p>
 
-          <div className="form-group">
-            <label htmlFor="password" className="form-label">
-              <FaLock className="label-icon" />
-              Contraseña
-            </label>
-            <div className="password-input-wrapper">
-              <input
-                type={showPassword ? 'text' : 'password'}
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                className={`form-input ${errors.password ? 'error' : ''}`}
-                placeholder="Crea una contraseña segura"
-                autoComplete="new-password"
-              />
-              <button
-                type="button"
-                className="password-toggle"
-                onClick={() => setShowPassword(!showPassword)}
-                aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
-              >
-                {showPassword ? <FaEyeSlash /> : <FaEye />}
-              </button>
-            </div>
-            {errors.password && <span className="form-error">{errors.password}</span>}
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="confirmPassword" className="form-label">
-              <FaLock className="label-icon" />
-              Confirmar Contraseña
-            </label>
-            <div className="password-input-wrapper">
-              <input
-                type={showConfirmPassword ? 'text' : 'password'}
-                id="confirmPassword"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                className={`form-input ${errors.confirmPassword ? 'error' : ''}`}
-                placeholder="Repite tu contraseña"
-                autoComplete="new-password"
-              />
-              <button
-                type="button"
-                className="password-toggle"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                aria-label={showConfirmPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
-              >
-                {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
-              </button>
-            </div>
-            {errors.confirmPassword && <span className="form-error">{errors.confirmPassword}</span>}
-          </div>
-
-          <button 
-            type="submit" 
-            className="btn btn-primary btn-lg"
-            disabled={isSubmitting || loading}
-          >
-            {isSubmitting ? (
-              <>
-                <div className="loader small"></div>
-                Creando cuenta...
-              </>
-            ) : (
-              'Crear Cuenta'
+            {/* Error Message */}
+            {error && (
+              <div className="error-message">
+                <p>{error}</p>
+              </div>
             )}
-          </button>
-        </form>
 
-        {/* Footer */}
-        <div className="auth-footer">
-          <p>
-            ¿Ya tienes una cuenta?{' '}
-            <Link to="/login" className="auth-link">
-              Inicia sesión aquí
-            </Link>
-          </p>
+            <form onSubmit={handleSubmit}>
+              <div className="form-group">
+                <label className="form-label" htmlFor="firstName">Nombre</label>
+                <input
+                  type="text"
+                  id="firstName"
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  className={`form-input ${errors.firstName ? 'error' : ''}`}
+                  placeholder="Nombre"
+                  autoComplete="given-name"
+                />
+                {errors.firstName && <span className="form-error">{errors.firstName}</span>}
+              </div>
+
+              <div className="form-group">
+                <label className="form-label" htmlFor="username">Correo</label>
+                <input
+                  type="text"
+                  id="username"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  className={`form-input ${errors.username ? 'error' : ''}`}
+                  placeholder="Correo"
+                  autoComplete="username"
+                />
+                {errors.username && <span className="form-error">{errors.username}</span>}
+              </div>
+
+              <div className="form-group">
+                <label className="form-label" htmlFor="password">Contraseña</label>
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  id="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className={`form-input ${errors.password ? 'error' : ''}`}
+                  placeholder="Contraseña"
+                  autoComplete="new-password"
+                />
+                {errors.password && <span className="form-error">{errors.password}</span>}
+              </div>
+
+              <div className="form-group">
+                <div className="terms-checkbox">
+                  <input
+                    type="checkbox"
+                    id="acceptTerms"
+                    checked={acceptTerms}
+                    onChange={(e) => setAcceptTerms(e.target.checked)}
+                    className="checkbox-input"
+                  />
+                  <label htmlFor="acceptTerms" className="checkbox-label">
+                    Acepto los <Link to="/terms-and-conditions" className="terms-link">términos y condiciones</Link>
+                  </label>
+                </div>
+                {errors.acceptTerms && <span className="form-error">{errors.acceptTerms}</span>}
+              </div>
+
+              <button 
+                type="submit" 
+                className="login-button"
+                disabled={isSubmitting || loading}
+              >
+                {isSubmitting ? (
+                  <>
+                    <div className="loader small"></div>
+                    Creando cuenta...
+                  </>
+                ) : (
+                  'Crear cuenta'
+                )}
+              </button>
+            </form>
+
+            <div className="register-link">
+              ¿Ya tienes una cuenta? <Link to="/login">Inicia sesión</Link>
+            </div>
+          </div>
         </div>
       </div>
     </div>

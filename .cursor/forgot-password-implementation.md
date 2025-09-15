@@ -281,3 +281,6 @@ La funcionalidad de "Olvidaste tu contraseña" está **completamente implementad
 Los usuarios ahora pueden restablecer su contraseña de forma segura y intuitiva, con un flujo completo desde la solicitud hasta el restablecimiento exitoso. El sistema incluye medidas de seguridad apropiadas y una experiencia de usuario optimizada. 🔐✅
 
 
+
+
+

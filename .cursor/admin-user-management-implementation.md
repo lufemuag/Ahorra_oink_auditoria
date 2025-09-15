@@ -262,3 +262,6 @@ Las funcionalidades de editar y eliminar usuarios están **completamente impleme
 Los administradores ahora pueden gestionar usuarios de forma completa y segura, con modales intuitivos, validaciones robustas y medidas de seguridad apropiadas. El sistema incluye protección contra auto-eliminación y confirmaciones de seguridad para acciones destructivas. 👥✅
 
 
+
+
+
