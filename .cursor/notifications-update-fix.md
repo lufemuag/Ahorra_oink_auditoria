@@ -270,3 +270,4 @@ La aplicación ahora maneja las notificaciones de forma fluida y responsiva, pro
 
 
 
+

@@ -34,7 +34,15 @@
 }
 
 .card {
-  padding: 2em;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-radius: 16px;
+  background-color: #2d6b3b;
+  margin-bottom: 1rem;
+  max-width: 100%;
 }
 
 .read-the-docs {

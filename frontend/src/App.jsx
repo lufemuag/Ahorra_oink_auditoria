@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { MoneyProvider } from './context/MoneyContext';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import Layout from './components/layout/Layout';
 import Login from './pages/Auth/Login';
@@ -13,12 +14,19 @@ import Expenses from './pages/Expenses/Expenses';
 import Statistics from './pages/Statistics/Statistics';
 import Methodologies from './pages/Methodologies/Methodologies';
 import Settings from './pages/Settings/Settings';
+import Methods from './pages/Methods/Methods';
+import Method50_30_20 from './pages/Method50-30-20/Method50-30-20';
+import MethodSobres from './pages/MethodSobres/MethodSobres';
+import AhorroAutomatico from './pages/AhorroAutomatico/AhorroAutomatico';
+import Ahorro1Dolar from './pages/Ahorro1Dolar/Ahorro1Dolar';
+import MetodoRedondeo from './pages/MetodoRedondeo/MetodoRedondeo';
 import './styles/globals.css';
 
 function App() {
   return (
     <AuthProvider>
-      <Router>
+      <MoneyProvider>
+        <Router>
         <div className="app">
           <Routes>
             {/* Rutas públicas (autenticación) */}
@@ -96,6 +104,73 @@ function App() {
               } 
             />
             
+            {/* Rutas de métodos de ahorro */}
+            <Route 
+              path="/metodos" 
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <Methods />
+                  </Layout>
+                </ProtectedRoute>
+              } 
+            />
+            
+            <Route 
+              path="/metodo-50-30-20" 
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <Method50_30_20 />
+                  </Layout>
+                </ProtectedRoute>
+              } 
+            />
+            
+            <Route 
+              path="/metodo-sobres" 
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <MethodSobres />
+                  </Layout>
+                </ProtectedRoute>
+              } 
+            />
+            
+            <Route 
+              path="/ahorro-automatico" 
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <AhorroAutomatico />
+                  </Layout>
+                </ProtectedRoute>
+              } 
+            />
+            
+            <Route 
+              path="/ahorro-1dolar" 
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <Ahorro1Dolar />
+                  </Layout>
+                </ProtectedRoute>
+              } 
+            />
+            
+            <Route 
+              path="/metodo-redondeo" 
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <MetodoRedondeo />
+                  </Layout>
+                </ProtectedRoute>
+              } 
+            />
+            
             {/* Ruta por defecto */}
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             
@@ -113,7 +188,8 @@ function App() {
             />
           </Routes>
         </div>
-      </Router>
+        </Router>
+      </MoneyProvider>
     </AuthProvider>
   );
 }

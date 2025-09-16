@@ -9,6 +9,7 @@ import {
   FaUserTag, 
   FaLock 
 } from 'react-icons/fa';
+import pigImage from '../../assets/cabeza.png';
 import './Auth.css';
 
 const Register = () => {
@@ -158,26 +159,14 @@ const Register = () => {
       {/* Main container */}
       <div className="main-container">
         <div className="login-wrapper">
-          {/* Sección izquierda - Ilustración del cerdo */}
+          {/* Sección izquierda - Imagen del cerdo */}
           <div className="character-section">
-            <div className="pig-character">
-              <div className="pig-body">
-                <div className="pig-head">
-                  <div className="pig-hat"></div>
-                  <div className="pig-ear left"></div>
-                  <div className="pig-ear right"></div>
-                  <div className="pig-eyes">
-                    <div className="pig-eye left"></div>
-                    <div className="pig-eye right"></div>
-                  </div>
-                  <div className="pig-glasses"></div>
-                  <div className="pig-snout"></div>
-                </div>
-                <div className="pig-arm left"></div>
-                <div className="pig-arm right"></div>
-                <div className="pig-leg left"></div>
-                <div className="pig-leg right"></div>
-              </div>
+            <div className="pig-image-container">
+              <img 
+                src={pigImage} 
+                alt="Cerdo Oink Sentado" 
+                className="pig-image"
+              />
             </div>
           </div>
 

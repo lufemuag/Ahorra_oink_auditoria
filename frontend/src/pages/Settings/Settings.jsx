@@ -1,276 +1,184 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { 
-  FaUser,
-  FaBell,
-  FaShieldAlt,
-  FaPalette,
-  FaDownload,
+  FaChevronDown,
   FaTrash,
-  FaSave,
   FaEdit,
+  FaSave,
   FaCheck,
   FaTimes
 } from 'react-icons/fa';
+import pigImage from '../../assets/cerdoConfig.png';
 import './Settings.css';
 
 const Settings = () => {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState('profile');
   const [settings, setSettings] = useState({
-    profile: {
-      firstName: user?.firstName || '',
-      lastName: user?.lastName || '',
-      username: user?.username || '',
-      email: user?.email || '',
-      phone: user?.phone || ''
-    },
-    preferences: {
-      currency: 'USD',
-      language: 'es',
-      theme: 'light'
-    }
+    username: user?.username || 'usuario123',
+    savingMethod: 'Transporte'
   });
-
-  const [editingField, setEditingField] = useState(null);
-  const [editValue, setEditValue] = useState('');
+  const [editingUsername, setEditingUsername] = useState(false);
+  const [newUsername, setNewUsername] = useState(settings.username);
+  const [showDropdown, setShowDropdown] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
 
-  const currencies = [
-    { code: 'USD', symbol: '$', name: 'Dólar Americano' },
-    { code: 'EUR', symbol: '€', name: 'Euro' },
-    { code: 'MXN', symbol: '$', name: 'Peso Mexicano' },
-    { code: 'COP', symbol: '$', name: 'Peso Colombiano' },
-    { code: 'ARS', symbol: '$', name: 'Peso Argentino' },
-    { code: 'CLP', symbol: '$', name: 'Peso Chileno' }
+  const savingMethods = [
+    'Transporte',
+    'Gastos fijos',
+    'Ahorro'
   ];
 
-  const languages = [
-    { code: 'es', name: 'Español' },
-    { code: 'en', name: 'English' },
-    { code: 'pt', name: 'Português' }
-  ];
-
-  const themes = [
-    { code: 'light', name: 'Claro' },
-    { code: 'dark', name: 'Oscuro' },
-    { code: 'auto', name: 'Automático' }
-  ];
-
-  const tabs = [
-    { id: 'profile', label: 'Perfil', icon: FaUser },
-    { id: 'preferences', label: 'Preferencias', icon: FaPalette },
-    { id: 'security', label: 'Seguridad', icon: FaShieldAlt },
-    { id: 'notifications', label: 'Notificaciones', icon: FaBell },
-    { id: 'data', label: 'Datos', icon: FaDownload }
-  ];
+  useEffect(() => {
+    // Agregar clase al body cuando se monta el componente
+    document.body.classList.add('settings-page-active');
+    
+    // Limpiar clase del body cuando se desmonta el componente
+    return () => {
+      document.body.classList.remove('settings-page-active');
+    };
+  }, []);
 
   useEffect(() => {
     if (message.text) {
       const timer = setTimeout(() => {
         setMessage({ type: '', text: '' });
-      }, 5000);
+      }, 3000);
       return () => clearTimeout(timer);
     }
   }, [message]);
 
-  const handleFieldEdit = (field, currentValue) => {
-    setEditingField(field);
-    setEditValue(currentValue);
-  };
-
-  const handleFieldSave = () => {
-    if (editingField) {
-      const [section, field] = editingField.split('.');
-      setSettings(prev => ({
-        ...prev,
-        [section]: {
-          ...prev[section],
-          [field]: editValue
-        }
-      }));
-      setEditingField(null);
-      setEditValue('');
-      setMessage({ type: 'success', text: 'Campo actualizado correctamente' });
+  const handleUsernameSave = () => {
+    if (newUsername.trim()) {
+      setSettings(prev => ({ ...prev, username: newUsername.trim() }));
+      setEditingUsername(false);
+      setMessage({ type: 'success', text: 'Nombre de usuario actualizado' });
     }
   };
 
-  const handleFieldCancel = () => {
-    setEditingField(null);
-    setEditValue('');
+  const handleUsernameCancel = () => {
+    setNewUsername(settings.username);
+    setEditingUsername(false);
   };
 
-  const handleSaveSettings = () => {
-    setMessage({ type: 'success', text: 'Configuraciones guardadas correctamente' });
+  const handleSavingMethodChange = (method) => {
+    setSettings(prev => ({ ...prev, savingMethod: method }));
+    setShowDropdown(false);
+    setMessage({ type: 'success', text: `Método de ahorro cambiado a: ${method}` });
   };
 
-  const renderField = (section, field, label, type = 'text', options = null) => {
-    const value = settings[section][field];
-    const fieldKey = `${section}.${field}`;
-    const isEditing = editingField === fieldKey;
-
-    return (
-      <div className="setting-item">
-        <label className="setting-label">{label}</label>
-        <div className="setting-value">
-          {isEditing ? (
-            <div className="edit-mode">
-              {type === 'select' ? (
-                <select
-                  value={editValue}
-                  onChange={(e) => setEditValue(e.target.value)}
-                  className="edit-input"
-                >
-                  {options.map(option => (
-                    <option key={option.code || option} value={option.code || option}>
-                      {option.name || option}
-                    </option>
-                  ))}
-                </select>
-              ) : (
-                <input
-                  type={type}
-                  value={editValue}
-                  onChange={(e) => setEditValue(e.target.value)}
-                  className="edit-input"
-                />
-              )}
-              <div className="edit-actions">
-                <button className="save-btn" onClick={handleFieldSave}>
-                  <FaCheck />
-                </button>
-                <button className="cancel-btn" onClick={handleFieldCancel}>
-                  <FaTimes />
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="display-mode">
-              <span className="value-text">
-                {type === 'select' && options 
-                  ? options.find(opt => opt.code === value)?.name || value
-                  : value || 'No especificado'
-                }
-              </span>
-              <button 
-                className="edit-btn"
-                onClick={() => handleFieldEdit(fieldKey, value)}
-              >
-                <FaEdit />
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
-    );
+  const handleDeleteAccount = () => {
+    if (window.confirm('¿Estás seguro de que quieres eliminar tu cuenta? Esta acción no se puede deshacer.')) {
+      setMessage({ type: 'info', text: 'Funcionalidad de eliminación en desarrollo' });
+    }
   };
 
   return (
-    <div className="settings">
+    <div className="settings-page">
+      {/* Header Section */}
       <div className="settings-header">
-        <h1>⚙️ Configuración</h1>
-        <p>Personaliza tu experiencia y gestiona tu cuenta</p>
+        <div className="header-content">
+          <h1>Vamos a arreglar unas cosas</h1>
+        </div>
       </div>
 
+      {/* Settings Card */}
+      <div className="settings-card">
+        <div className="settings-content">
+          {/* Settings Options */}
+          <div className="settings-options">
+            {/* Change Username */}
+            <div className="setting-item">
+              <button 
+                className="setting-button username-button"
+                onClick={() => setEditingUsername(true)}
+              >
+                <span>Cambiar nombre de usuario</span>
+                <FaEdit className="button-icon" />
+              </button>
+              
+              {editingUsername && (
+                <div className="edit-modal">
+                  <div className="edit-content">
+                    <h3>Cambiar nombre de usuario</h3>
+                    <input
+                      type="text"
+                      value={newUsername}
+                      onChange={(e) => setNewUsername(e.target.value)}
+                      className="username-input"
+                      placeholder="Nuevo nombre de usuario"
+                      autoFocus
+                    />
+                    <div className="edit-actions">
+                      <button className="save-btn" onClick={handleUsernameSave}>
+                        <FaCheck />
+                        Guardar
+                      </button>
+                      <button className="cancel-btn" onClick={handleUsernameCancel}>
+                        <FaTimes />
+                        Cancelar
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Change Saving Method */}
+            <div className="setting-item">
+              <div className="dropdown-container">
+                <button 
+                  className="setting-button dropdown-button"
+                  onClick={() => setShowDropdown(!showDropdown)}
+                >
+                  <span>Cambiar metodo de ahorro</span>
+                  <FaChevronDown className={`chevron-icon ${showDropdown ? 'rotated' : ''}`} />
+                </button>
+                
+                {showDropdown && (
+                  <div className="dropdown-menu">
+                    {savingMethods.map((method) => (
+                      <button
+                        key={method}
+                        className={`dropdown-item ${settings.savingMethod === method ? 'selected' : ''}`}
+                        onClick={() => handleSavingMethodChange(method)}
+                      >
+                        {method}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Delete Button */}
+            <div className="setting-item">
+              <button 
+                className="setting-button delete-button"
+                onClick={handleDeleteAccount}
+              >
+                <FaTrash className="button-icon" />
+                <span>Eliminar cuenta</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Pig Image */}
+          <div className="pig-image-container">
+            <img 
+              src={pigImage} 
+              alt="Cerdo Oink" 
+              className="pig-image"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Message */}
       {message.text && (
         <div className={`message ${message.type}`}>
           {message.text}
         </div>
       )}
-
-      <div className="settings-content">
-        <div className="settings-sidebar">
-          <nav className="settings-nav">
-            {tabs.map((tab) => {
-              const Icon = tab.icon;
-              return (
-                <button
-                  key={tab.id}
-                  className={`nav-item ${activeTab === tab.id ? 'active' : ''}`}
-                  onClick={() => setActiveTab(tab.id)}
-                >
-                  <Icon />
-                  <span>{tab.label}</span>
-                </button>
-              );
-            })}
-          </nav>
-        </div>
-
-        <div className="settings-main">
-          {activeTab === 'profile' && (
-            <div className="settings-section">
-              <h2>Información Personal</h2>
-              <div className="settings-form">
-                {renderField('profile', 'firstName', 'Nombre')}
-                {renderField('profile', 'lastName', 'Apellido')}
-                {renderField('profile', 'username', 'Nombre de usuario')}
-                {renderField('profile', 'email', 'Correo electrónico', 'email')}
-                {renderField('profile', 'phone', 'Teléfono', 'tel')}
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'preferences' && (
-            <div className="settings-section">
-              <h2>Preferencias</h2>
-              <div className="settings-form">
-                {renderField('preferences', 'currency', 'Moneda', 'select', currencies)}
-                {renderField('preferences', 'language', 'Idioma', 'select', languages)}
-                {renderField('preferences', 'theme', 'Tema', 'select', themes)}
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'security' && (
-            <div className="settings-section">
-              <h2>Seguridad</h2>
-              <div className="settings-form">
-                <div className="setting-item">
-                  <label className="setting-label">Cambiar Contraseña</label>
-                  <div className="setting-value">
-                    <button className="change-password-btn">
-                      Cambiar Contraseña
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'notifications' && (
-            <div className="settings-section">
-              <h2>Notificaciones</h2>
-              <div className="settings-form">
-                <p>Configuración de notificaciones próximamente...</p>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'data' && (
-            <div className="settings-section">
-              <h2>Gestión de Datos</h2>
-              <div className="data-actions">
-                <div className="data-action">
-                  <h3>Exportar Datos</h3>
-                  <p>Descarga una copia de todos tus datos personales</p>
-                  <button className="export-btn">
-                    <FaDownload />
-                    Exportar Datos
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
-      <div className="settings-footer">
-        <button className="save-all-btn" onClick={handleSaveSettings}>
-          <FaSave />
-          Guardar Cambios
-        </button>
-      </div>
     </div>
   );
 };

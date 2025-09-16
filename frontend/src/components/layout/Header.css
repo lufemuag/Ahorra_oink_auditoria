@@ -1,5 +1,5 @@
 .header {
-  background: #fdd835;
+  background: #f9a825;
   box-shadow: var(--shadow-md);
   position: sticky;
   top: 0;
@@ -22,7 +22,7 @@
   align-items: center;
   gap: var(--spacing-sm);
   text-decoration: none;
-  color: var(--white);
+  color: white;
   font-weight: 700;
   font-size: var(--font-size-xl);
   transition: all var(--transition-fast);
@@ -97,7 +97,7 @@
   align-items: center;
   gap: var(--spacing-sm);
   background: rgba(255, 255, 255, 0.1);
-  color: var(--white);
+  color: white;
   border: none;
   padding: var(--spacing-md);
   border-radius: var(--radius-md);
@@ -112,8 +112,8 @@
 }
 
 .coins-icon {
-  font-size: var(--font-size-lg);
-  color: var(--primary-yellow);
+  font-size: 2rem;
+  color: #fdd835;
 }
 
 .chevron-icon {

@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { FaEye, FaEyeSlash, FaPiggyBank, FaUser, FaLock, FaCoins } from 'react-icons/fa';
 import ForgotPasswordModal from '../../components/auth/ForgotPasswordModal';
+import pigImage from '../../assets/cabeza.png';
 import './Auth.css';
 
 const Login = () => {
@@ -187,26 +188,14 @@ const Login = () => {
             </div>
           </div>
 
-          {/* Sección derecha - Ilustración del cerdo */}
+          {/* Sección derecha - Imagen del cerdo */}
           <div className="character-section">
-            <div className="pig-character">
-              <div className="pig-body">
-                <div className="pig-head">
-                  <div className="pig-hat"></div>
-                  <div className="pig-ear left"></div>
-                  <div className="pig-ear right"></div>
-                  <div className="pig-eyes">
-                    <div className="pig-eye left"></div>
-                    <div className="pig-eye right"></div>
-                  </div>
-                  <div className="pig-glasses"></div>
-                  <div className="pig-snout"></div>
-                </div>
-                <div className="pig-arm left"></div>
-                <div className="pig-arm right"></div>
-                <div className="pig-leg left"></div>
-                <div className="pig-leg right"></div>
-              </div>
+            <div className="pig-image-container">
+              <img 
+                src={pigImage} 
+                alt="Cerdo Oink Sentado" 
+                className="pig-image"
+              />
             </div>
           </div>
         </div>

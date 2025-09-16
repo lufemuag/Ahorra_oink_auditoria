@@ -279,10 +279,20 @@
   border-radius: 25px 0 0 25px;
 }
 
-.pig-character {
+.pig-image-container {
   width: 200px;
   height: 200px;
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pig-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.3));
 }
 
 /* Pig body */
@@ -537,7 +547,7 @@
     padding: 30px;
   }
 
-  .pig-character {
+  .pig-image-container {
     width: 150px;
     height: 150px;
   }

@@ -1,0 +1,292 @@
+/* Methods Page Styles */
+.methods-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #2d5016 0%, #4a7c59 100%);
+  padding: 0;
+  margin: 0;
+}
+
+/* Header Section */
+.methods-header {
+  padding: 3rem 2rem;
+  background: linear-gradient(135deg, #2d5016 0%, #3a5f47 100%);
+  border-bottom: 3px solid #fffdd0;
+}
+
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 3rem;
+}
+
+.header-text {
+  flex: 1;
+  color: white;
+}
+
+.header-text h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0 0 1rem 0;
+  color: #fffdd0;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.header-text p {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Pig Image Container */
+.pig-image-container {
+  flex-shrink: 0;
+  position: relative;
+  width: 200px;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pig-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  animation: float 3s ease-in-out infinite;
+  filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.3));
+}
+
+/* Animation */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Methods Section */
+.methods-section {
+  padding: 4rem 2rem;
+  background: #2d5016;
+}
+
+.methods-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.methods-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  align-items: center;
+}
+
+/* Method Cards */
+.method-card {
+  width: 100%;
+  max-width: 800px;
+  height: 120px;
+  perspective: 1000px;
+  cursor: pointer;
+}
+
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+
+.method-card:hover .card-inner {
+  transform: rotateY(180deg);
+}
+
+.card-front,
+.card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.card-front {
+  background: linear-gradient(135deg, #fffdd0 0%, #fff9c4 100%);
+  border: 3px solid #2d5016;
+}
+
+.card-back {
+  background: linear-gradient(135deg, #2d5016 0%, #3a5f47 100%);
+  border: 3px solid #fffdd0;
+  transform: rotateY(180deg);
+  color: white;
+}
+
+.card-front:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
+}
+
+.card-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  margin-right: 2rem;
+  flex-shrink: 0;
+}
+
+.card-front h3 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #2d5016;
+  margin: 0;
+  text-align: left;
+}
+
+.card-description {
+  text-align: center;
+}
+
+.card-description p {
+  font-size: 1.1rem;
+  line-height: 1.5;
+  margin: 0 0 1rem 0;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.card-action {
+  background: rgba(255, 253, 208, 0.2);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  border: 1px solid #fffdd0;
+}
+
+.card-action span {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #fffdd0;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .header-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 2rem;
+  }
+  
+  .header-text h1 {
+    font-size: 2rem;
+  }
+  
+  .header-text p {
+    font-size: 1.1rem;
+  }
+  
+  .pig-image-container {
+    width: 150px;
+    height: 150px;
+  }
+}
+
+@media (max-width: 768px) {
+  .methods-header {
+    padding: 2rem 1rem;
+  }
+  
+  .methods-section {
+    padding: 2rem 1rem;
+  }
+  
+  .header-text h1 {
+    font-size: 1.8rem;
+  }
+  
+  .header-text p {
+    font-size: 1rem;
+  }
+  
+  .method-card {
+    height: 100px;
+  }
+  
+  .card-front,
+  .card-back {
+    padding: 1.5rem;
+  }
+  
+  .card-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem;
+    margin-right: 1.5rem;
+  }
+  
+  .card-front h3 {
+    font-size: 1.5rem;
+  }
+  
+  .card-description p {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-text h1 {
+    font-size: 1.5rem;
+  }
+  
+  .header-text p {
+    font-size: 0.9rem;
+  }
+  
+  .pig-image-container {
+    width: 120px;
+    height: 120px;
+  }
+  
+  .method-card {
+    height: 90px;
+  }
+  
+  .card-front,
+  .card-back {
+    padding: 1rem;
+    border-radius: 25px;
+  }
+  
+  .card-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+    margin-right: 1rem;
+  }
+  
+  .card-front h3 {
+    font-size: 1.2rem;
+  }
+  
+  .card-description p {
+    font-size: 0.9rem;
+  }
+  
+  .card-action span {
+    font-size: 0.8rem;
+  }
+}

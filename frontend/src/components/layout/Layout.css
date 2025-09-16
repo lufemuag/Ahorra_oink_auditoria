@@ -93,6 +93,86 @@
   background: #2d5016;
 }
 
+/* Methodologies page specific styles */
+.methodologies-layout {
+  background: #2d5016;
+  margin: 0;
+  padding: 0;
+}
+
+.methodologies-main {
+  padding: 0 !important;
+  background: #2d5016;
+  margin: 0;
+}
+
+.methodologies-container {
+  padding: 0 !important;
+  max-width: none !important;
+  margin: 0 !important;
+  background: #2d5016;
+}
+
+/* Settings page specific styles */
+.settings-layout {
+  background: #3a6b1f;
+  margin: 0;
+  padding: 0;
+}
+
+.settings-main {
+  padding: 0 !important;
+  background: #3a6b1f;
+  margin: 0;
+}
+
+.settings-container {
+  padding: 0 !important;
+  max-width: none !important;
+  margin: 0 !important;
+  background: #3a6b1f;
+}
+
+/* Methods page specific styles */
+.methods-layout {
+  background: #2d5016;
+  margin: 0;
+  padding: 0;
+}
+
+.methods-main {
+  padding: 0 !important;
+  background: #2d5016;
+  margin: 0;
+}
+
+.methods-container {
+  padding: 0 !important;
+  max-width: none !important;
+  margin: 0 !important;
+  background: #2d5016;
+}
+
+/* Method pages specific styles */
+.method-layout {
+  background: #2d5016;
+  margin: 0;
+  padding: 0;
+}
+
+.method-main {
+  padding: 0 !important;
+  background: #2d5016;
+  margin: 0;
+}
+
+.method-container {
+  padding: 0 !important;
+  max-width: none !important;
+  margin: 0 !important;
+  background: #2d5016;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .main-content {
@@ -132,6 +212,38 @@
   }
   
   .statistics-container {
+    padding: 0 !important;
+  }
+  
+  .methodologies-main {
+    padding: 0 !important;
+  }
+  
+  .methodologies-container {
+    padding: 0 !important;
+  }
+  
+  .settings-main {
+    padding: 0 !important;
+  }
+  
+  .settings-container {
+    padding: 0 !important;
+  }
+  
+  .methods-main {
+    padding: 0 !important;
+  }
+  
+  .methods-container {
+    padding: 0 !important;
+  }
+  
+  .method-main {
+    padding: 0 !important;
+  }
+  
+  .method-container {
     padding: 0 !important;
   }
 }

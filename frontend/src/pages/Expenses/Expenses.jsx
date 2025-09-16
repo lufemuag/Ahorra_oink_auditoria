@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { transactionService } from '../../services/transactionService';
 import { 
   FaDollarSign,
   FaTag,
@@ -72,44 +73,16 @@ const Expenses = () => {
 
   const loadTransactions = () => {
     try {
-      // Datos de prueba
-      const mockTransactions = [
-        {
-          id: 1,
-          type: 'expense',
-          amount: 500000,
-          category: 'Transporte',
-          description: 'Gasolina',
-          date: new Date().toISOString()
-        },
-        {
-          id: 2,
-          type: 'savings',
-          amount: 500000,
-          category: 'Fondo de emergencia',
-          description: 'Ahorro mensual',
-          date: new Date().toISOString()
-        },
-        {
-          id: 3,
-          type: 'expense',
-          amount: 500000,
-          category: 'Transporte',
-          description: 'Uber',
-          date: new Date().toISOString()
-        },
-        {
-          id: 4,
-          type: 'income',
-          amount: 2000000,
-          category: 'Salario',
-          description: 'Pago mensual',
-          date: new Date().toISOString()
-        }
-      ];
-      setTransactions(mockTransactions);
+      if (user?.id) {
+        // Obtener transacciones reales del usuario
+        const userTransactions = transactionService.getByUser(user.id);
+        setTransactions(userTransactions);
+      } else {
+        setTransactions([]);
+      }
     } catch (error) {
       console.error('Error loading transactions:', error);
+      setTransactions([]);
     }
   };
 
@@ -138,31 +111,50 @@ const Expenses = () => {
 
     if (editingId) {
       // Editar transacción existente
-      setTransactions(prev => prev.map(t => 
-        t.id === editingId 
-          ? {
-              ...t,
-              type: formData.type,
-              amount: parseFloat(formData.amount),
-              category: formData.category,
-              description: formData.description,
-              date: new Date().toISOString()
-            }
-          : t
-      ));
-      setEditingId(null);
+      const transactionToUpdate = transactions.find(t => t.id === editingId);
+      if (transactionToUpdate) {
+        const updatedTransaction = {
+          ...transactionToUpdate,
+          type: formData.type,
+          amount: parseFloat(formData.amount),
+          category: formData.category,
+          description: formData.description,
+          date: new Date().toISOString()
+        };
+        
+        // Actualizar en el servicio (aquí necesitaríamos una función update)
+        // Por ahora, eliminamos y creamos una nueva
+        transactionService.delete(editingId);
+        const result = transactionService.create({
+          userId: user.id,
+          type: formData.type,
+          amount: parseFloat(formData.amount),
+          category: formData.category,
+          description: formData.description,
+          date: new Date().toISOString()
+        });
+        
+        if (result.success) {
+          loadTransactions(); // Recargar transacciones
+          setEditingId(null);
+        }
+      }
     } else {
       // Agregar nueva transacción
-      const newTransaction = {
-        id: Date.now(),
+      const result = transactionService.create({
+        userId: user.id,
         type: formData.type,
         amount: parseFloat(formData.amount),
         category: formData.category,
         description: formData.description,
         date: new Date().toISOString()
-      };
-
-      setTransactions(prev => [newTransaction, ...prev]);
+      });
+      
+      if (result.success) {
+        loadTransactions(); // Recargar transacciones
+      } else {
+        alert('Error al crear la transacción');
+      }
     }
     
     // Reset form
@@ -176,7 +168,12 @@ const Expenses = () => {
 
   const handleDelete = (id) => {
     if (window.confirm('¿Estás seguro de que quieres eliminar este registro?')) {
-      setTransactions(prev => prev.filter(t => t.id !== id));
+      const result = transactionService.delete(id);
+      if (result.success) {
+        loadTransactions(); // Recargar transacciones
+      } else {
+        alert('Error al eliminar la transacción');
+      }
     }
   };
 

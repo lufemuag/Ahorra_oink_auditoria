@@ -1,186 +1,86 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { 
-  FaBook,
-  FaLightbulb,
-  FaChartLine,
-  FaPiggyBank,
-  FaBullseye,
-  FaCalculator,
-  FaUsers,
-  FaCheckCircle,
-  FaPlay
-} from 'react-icons/fa';
+import pigImage from '../../assets/CerdoMetodologias.png';
 import './Methodologies.css';
 
 const Methodologies = () => {
   const { user } = useAuth();
-  const [selectedMethod, setSelectedMethod] = useState(null);
+
+  useEffect(() => {
+    // Agregar clase al body cuando se monta el componente
+    document.body.classList.add('methodologies-page-active');
+    
+    // Limpiar clase del body cuando se desmonta el componente
+    return () => {
+      document.body.classList.remove('methodologies-page-active');
+    };
+  }, []);
 
   const methodologies = [
     {
       id: '50-30-20',
-      name: 'Regla 50/30/20',
-      description: 'Distribuye tus ingresos en necesidades, deseos y ahorros',
-      icon: FaChartLine,
-      difficulty: 'Fácil',
-      timeCommitment: '5 min/día',
-      category: 'Presupuesto',
-      color: '#3498db'
-    },
-    {
-      id: 'zero-based',
-      name: 'Presupuesto Base Cero',
-      description: 'Asigna cada peso a una categoría específica',
-      icon: FaCalculator,
-      difficulty: 'Intermedio',
-      timeCommitment: '15 min/semana',
-      category: 'Presupuesto',
-      color: '#e74c3c'
+      title: '50-30-20',
+      subtitle: 'Método de Distribución',
+      description: 'Este método consiste en dividir los ingresos en tres partes: 50% para necesidades básicas como vivienda, transporte y alimentación, 30% para gustos y entretenimiento, y 20% destinado al ahorro o inversión. Es una forma clara y equilibrada de manejar el dinero, porque asegura cubrir lo esencial.'
     },
     {
       id: 'envelope',
-      name: 'Método de Sobres',
-      description: 'Asigna dinero en efectivo a categorías específicas',
-      icon: FaPiggyBank,
-      difficulty: 'Fácil',
-      timeCommitment: '10 min/semana',
-      category: 'Control de gastos',
-      color: '#f39c12'
+      title: 'Método de los Sobres',
+      subtitle: 'Sistema de Envelopes',
+      description: 'Aquí se organiza el dinero físico en sobres o categorías según los gastos planeados, como comida, transporte, ocio o ahorro. La idea es gastar solo lo que está en cada sobre y no pasarse del límite asignado, lo que ayuda a tener un control más estricto y evitar excesos en ciertas áreas.'
     },
     {
-      id: 'snowball',
-      name: 'Método Bola de Nieve',
-      description: 'Paga deudas empezando por la más pequeña',
-      icon: FaBullseye,
-      difficulty: 'Fácil',
-      timeCommitment: '5 min/día',
-      category: 'Pago de deudas',
-      color: '#2ecc71'
+      id: 'automatic-saving',
+      title: 'Ahorro Automático',
+      subtitle: 'Págate a ti mismo',
+      description: 'Este método consiste en apartar una cantidad fija o porcentaje de tus ingresos antes de gastar en otras cosas. Se puede configurar una transferencia automática a una cuenta de ahorros el día que recibes tu salario. Es efectivo porque construye el hábito de ahorrar sin depender demasiado de la fuerza de voluntad.'
     },
     {
-      id: 'pay-yourself-first',
-      name: 'Págate a Ti Mismo Primero',
-      description: 'Ahorra antes de gastar en otras cosas',
-      icon: FaUsers,
-      difficulty: 'Fácil',
-      timeCommitment: '2 min/día',
-      category: 'Ahorro',
-      color: '#9b59b6'
+      id: '1-percent',
+      title: 'Ahorro del 1%',
+      subtitle: 'Ahorro Escalonado',
+      description: 'Este método empieza con una meta muy baja: ahorrar solo el 1% de tus ingresos. Luego, cada mes aumentas un poco más (2%, 3%, etc.), hasta llegar a un porcentaje mayor. Es ideal para quienes encuentran difícil ahorrar grandes cantidades desde el inicio, ya que el progreso es gradual y menos exigente.'
+    },
+    {
+      id: 'rounding',
+      title: 'Método del Redondeo Inteligente',
+      subtitle: 'Redondeo Automático',
+      description: 'Cada vez que haces una compra, el valor se redondea hacia arriba al número entero o múltiplo más cercano, y la diferencia se guarda como ahorro. Por ejemplo, si pagas $9.200, se registra $10.000 y los $800 restantes se apartan automáticamente. Es útil porque permite ahorrar pequeñas cantidades constantes sin que lo notes demasiado.'
     }
   ];
 
-  const getDifficultyColor = (difficulty) => {
-    switch (difficulty) {
-      case 'Fácil':
-        return '#2ecc71';
-      case 'Intermedio':
-        return '#f39c12';
-      case 'Avanzado':
-        return '#e74c3c';
-      default:
-        return '#95a5a6';
-    }
-  };
-
   return (
-    <div className="methodologies">
+    <div className="methodologies-page">
+      {/* Header Section */}
       <div className="methodologies-header">
-        <h1>📚 Metodologías Financieras</h1>
-        <p>Aprende y aplica las mejores estrategias para manejar tus finanzas personales</p>
+        <div className="header-content">
+          <h1>Aprende como funcionan las metodologias que Ahorra Oink te proporciona</h1>
+        </div>
       </div>
 
+      {/* Methodologies Cards */}
       <div className="methodologies-content">
-        <div className="methodologies-grid">
-          {methodologies.map((method) => {
-            const Icon = method.icon;
-            return (
-              <div 
-                key={method.id} 
-                className="methodology-card"
-                onClick={() => setSelectedMethod(method)}
-              >
-                <div className="methodology-header">
-                  <div className="methodology-icon" style={{ backgroundColor: method.color }}>
-                    <Icon />
-                  </div>
-                  <div className="methodology-meta">
-                    <span 
-                      className="difficulty-badge"
-                      style={{ backgroundColor: getDifficultyColor(method.difficulty) }}
-                    >
-                      {method.difficulty}
-                    </span>
-                    <span className="time-badge">{method.timeCommitment}</span>
-                  </div>
-                </div>
-
-                <div className="methodology-info">
-                  <h3>{method.name}</h3>
-                  <p>{method.description}</p>
-                  <div className="methodology-category">{method.category}</div>
-                </div>
-
-                <button className="learn-more-btn">
-                  <FaPlay />
-                  Aprender Más
-                </button>
+        {methodologies.map((method) => (
+          <div key={method.id} className="methodology-card">
+            <div className="card-content">
+              <div className="text-section">
+                <h2 className="method-title">{method.title}</h2>
+                <h3 className="method-subtitle">{method.subtitle}</h3>
+                <p className="method-description">{method.description}</p>
               </div>
-            );
-          })}
-        </div>
-
-        {selectedMethod && (
-          <div className="methodology-detail">
-            <div className="detail-header">
-              <div className="detail-title">
-                <div 
-                  className="detail-icon"
-                  style={{ backgroundColor: selectedMethod.color }}
-                >
-                  <selectedMethod.icon />
-                </div>
-                <div>
-                  <h2>{selectedMethod.name}</h2>
-                  <p>{selectedMethod.description}</p>
-                </div>
-              </div>
-              <button 
-                className="close-detail"
-                onClick={() => setSelectedMethod(null)}
-              >
-                ×
-              </button>
-            </div>
-
-            <div className="detail-content">
-              <div className="tab-content">
-                <div className="overview-section">
-                  <h3>Descripción</h3>
-                  <p>Esta metodología te ayudará a organizar tus finanzas de manera efectiva.</p>
-                </div>
-                
-                <div className="benefits-section">
-                  <h3>Beneficios</h3>
-                  <ul>
-                    <li>
-                      <FaCheckCircle className="benefit-icon" />
-                      Mejora tu organización financiera
-                    </li>
-                    <li>
-                      <FaCheckCircle className="benefit-icon" />
-                      Te ayuda a alcanzar tus metas
-                    </li>
-                    <li>
-                      <FaCheckCircle className="benefit-icon" />
-                      Reduce el estrés financiero
-                    </li>
-                  </ul>
+              
+              <div className="pig-section">
+                <div className="pig-image-container">
+                  <img 
+                    src={pigImage} 
+                    alt="Cerdo Oink" 
+                    className="pig-image"
+                  />
                 </div>
               </div>
             </div>
           </div>
-        )}
+        ))}
       </div>
     </div>
   );

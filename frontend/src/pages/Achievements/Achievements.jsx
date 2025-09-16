@@ -15,6 +15,7 @@ import {
   FaRocket,
   FaGem
 } from 'react-icons/fa';
+import pigImage from '../../assets/CerdoLogros.png';
 import './Achievements.css';
 
 const Achievements = () => {
@@ -236,17 +237,12 @@ const Achievements = () => {
                     )}
                   </div>
                   <div className="card-illustration">
-                    <div className="pig-character">
-                      <div className="pig-head">
-                        <div className="pig-glasses"></div>
-                        <div className="pig-eyes">
-                          <div className="eye left"></div>
-                          <div className="eye right"></div>
-                        </div>
-                        <div className="pig-nose"></div>
-                        <div className="pig-smile"></div>
-                      </div>
-                      <div className="pig-hat"></div>
+                    <div className="pig-image-container">
+                      <img 
+                        src={pigImage} 
+                        alt="Cerdo Oink con Medalla" 
+                        className="pig-image"
+                      />
                     </div>
                   </div>
                 </div>

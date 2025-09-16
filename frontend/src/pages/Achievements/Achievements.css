@@ -378,80 +378,20 @@ body.achievements-page-active {
   align-items: center;
 }
 
-.pig-character {
+.pig-image-container {
   position: relative;
   width: 60px;
   height: 60px;
-}
-
-.pig-character .pig-head {
-  width: 50px;
-  height: 50px;
-  background: #ffb3ba;
-  border-radius: 50%;
-  position: relative;
-}
-
-.pig-character .pig-glasses {
-  position: absolute;
-  top: 15px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 30px;
-  height: 20px;
-  border: 2px solid #000;
-  border-radius: 50%;
-  background: transparent;
-}
-
-.pig-character .pig-eyes {
-  position: absolute;
-  top: 18px;
-  left: 50%;
-  transform: translateX(-50%);
   display: flex;
-  gap: 8px;
+  align-items: center;
+  justify-content: center;
 }
 
-.pig-character .eye {
-  width: 4px;
-  height: 4px;
-  background: #000;
-  border-radius: 50%;
-}
-
-.pig-character .pig-nose {
-  position: absolute;
-  top: 28px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 6px;
-  height: 5px;
-  background: #000;
-  border-radius: 50%;
-}
-
-.pig-character .pig-smile {
-  position: absolute;
-  top: 35px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 15px;
-  height: 8px;
-  border: 1px solid #000;
-  border-top: none;
-  border-radius: 0 0 15px 15px;
-}
-
-.pig-character .pig-hat {
-  position: absolute;
-  top: -5px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 35px;
-  height: 12px;
-  background: #d32f2f;
-  border-radius: 50% 50% 0 0;
+.pig-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
 }
 
 /* Back Card Styles */
@@ -805,7 +745,7 @@ body.achievements-page-active {
     flex: 0 0 60px;
   }
   
-  .pig-character {
+  .pig-image-container {
     width: 50px;
     height: 50px;
   }

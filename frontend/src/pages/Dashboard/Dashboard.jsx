@@ -1,26 +1,38 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { useMoney } from '../../context/MoneyContext';
 import { useNavigate } from 'react-router-dom';
 import { FaPiggyBank, FaDollarSign } from 'react-icons/fa';
+import pigImage from '../../assets/cerdoMoneda.png';
 import './Dashboard.css';
 
 const Dashboard = () => {
   const { user } = useAuth();
+  const { setUserAmount } = useMoney();
   const navigate = useNavigate();
   const [salary, setSalary] = useState('');
 
   const handleSalarySubmit = (e) => {
     e.preventDefault();
     if (salary.trim()) {
-      // Aquí podrías guardar el salario o redirigir a alguna página
-      console.log('Salario ingresado:', salary);
-      // Por ahora, redirigimos a la página de logros como ejemplo
-      navigate('/achievements');
+      // Convertir el salario a número y guardarlo en el contexto
+      const salaryAmount = parseFloat(salary.replace(/[^\d.-]/g, ''));
+      if (salaryAmount > 0) {
+        setUserAmount(salaryAmount);
+        // Redirigir a la página de métodos
+        navigate('/metodos');
+      }
     }
   };
 
   const handleStartSaving = () => {
-    navigate('/achievements');
+    if (salary.trim()) {
+      const salaryAmount = parseFloat(salary.replace(/[^\d.-]/g, ''));
+      if (salaryAmount > 0) {
+        setUserAmount(salaryAmount);
+        navigate('/metodos');
+      }
+    }
   };
 
   return (
@@ -29,49 +41,13 @@ const Dashboard = () => {
       <div className="landing-main">
         <div className="main-panel">
           <div className="panel-content">
-            {/* Left side - Pig character */}
-            <div className="pig-section">
-              <div className="pig-character">
-                <div className="pig-body">
-                  <div className="pig-head">
-                    <div className="pig-eyes">
-                      <div className="eye left"></div>
-                      <div className="eye right"></div>
-                    </div>
-                    <div className="pig-nose"></div>
-                    <div className="pig-ears">
-                      <div className="ear left"></div>
-                      <div className="ear right"></div>
-                    </div>
-                  </div>
-                  <div className="pig-hat"></div>
-                  <div className="pig-bowtie"></div>
-                </div>
-                <div className="armchair">
-                  <div className="chair-back"></div>
-                  <div className="chair-seat"></div>
-                  <div className="chair-arms">
-                    <div className="arm left"></div>
-                    <div className="arm right"></div>
-                  </div>
-                  <div className="chair-legs">
-                    <div className="leg left"></div>
-                    <div className="leg right"></div>
-                  </div>
-                </div>
-                <div className="piggy-bank">
-                  <div className="bank-body"></div>
-                  <div className="bank-face">
-                    <div className="bank-eyes">
-                      <div className="bank-eye left"></div>
-                      <div className="bank-eye right"></div>
-                    </div>
-                    <div className="bank-nose"></div>
-                    <div className="bank-smile"></div>
-                  </div>
-                  <div className="bank-slot"></div>
-                </div>
-              </div>
+            {/* Left side - Pig Image */}
+            <div className="pig-image-section">
+              <img 
+                src={pigImage} 
+                alt="Cerdo Oink Sentado" 
+                className="pig-image"
+              />
             </div>
 
             {/* Right side - Text and actions */}
