@@ -1,8 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './TermsAndConditions.css';
-import pigLogo from "../../assets/cerdo.png";
-
+import signLogo from '../../assets/CerdoSign.png'; // cerditos decorativos
 
 const TermsAndConditions = () => {
   const navigate = useNavigate();
@@ -12,38 +11,24 @@ const TermsAndConditions = () => {
   };
 
   return (
-    <div className="terms-container">
-      {/* Header */}
-      <div className="terms-header">
-        <div className="terms-logo">
-          <span className="logo-box">AHORRA</span>
-          <span className="logo-box">OINK</span>
-        </div>
-      </div>
+    <div className="terms-container dashboard">
+      {/* SIN header/logo */}
 
       {/* Main content */}
       <div className="terms-main">
         <div className="terms-card">
           <h1 className="terms-title">Términos y Condiciones de Ahorra Oink</h1>
-          
+
           <div className="terms-content">
-            {/* Pig illustrations */}
-            <div className="pig-left">
-              <img 
-                src={pigLogo} 
-                alt="Cerdo Oink" 
-                className="pig-image"
-              />
+            {/* Cerdos decorativos (CerdoSign) */}
+            <div className="pig-mid-left" aria-hidden="true">
+              <img src={signLogo} alt="" className="pig-image pig-float" />
+            </div>
+            <div className="pig-bottom-right" aria-hidden="true">
+              <img src={signLogo} alt="" className="pig-image pig-float-delayed" />
             </div>
 
-            <div className="pig-right">
-              <img 
-                src={pigLogo} 
-                alt="Cerdo Oink" 
-                className="pig-image"
-              />
-            </div>
-
+            {/* Texto (no se modifican datos) */}
             <div className="terms-section">
               <h2 className="section-title">1. Datos generales</h2>
               <p><strong>Nombre de la aplicación:</strong> Ahorra Oink.</p>
@@ -94,12 +79,9 @@ const TermsAndConditions = () => {
             </div>
           </div>
 
-          {/* Back button */}
+          {/* Botón */}
           <div className="terms-actions">
-            <button 
-              className="back-button"
-              onClick={handleBackToRegister}
-            >
+            <button className="back-button" onClick={handleBackToRegister}>
               Volver al Registro
             </button>
           </div>

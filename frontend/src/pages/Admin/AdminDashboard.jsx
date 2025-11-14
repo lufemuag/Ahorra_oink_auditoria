@@ -1,502 +1,300 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { ticketService } from '../../services/ticketService';
-import { adminUserService } from '../../services/adminUserService';
-import CreateUserModal from '../../components/admin/CreateUserModal';
-import TicketDetailsModal from '../../components/admin/TicketDetailsModal';
-import EditUserModal from '../../components/admin/EditUserModal';
-import DeleteUserModal from '../../components/admin/DeleteUserModal';
-import { 
-  FaUsers, 
-  FaTicketAlt, 
-  FaChartBar, 
-  FaCog,
-  FaUserPlus,
-  FaSearch,
-  FaFilter,
-  FaExclamationTriangle,
-  FaClock,
-  FaCheckCircle,
-  FaTimesCircle,
-  FaEdit,
-  FaTrash,
-  FaEye
-} from 'react-icons/fa';
+import { adminService } from '../../services/adminService';
+import { FaUsers, FaDollarSign, FaChartLine, FaPiggyBank, FaEye, FaEdit, FaTrashRestore } from 'react-icons/fa';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
-  const { user, getAllUsers, isAdmin } = useAuth();
-  const [activeTab, setActiveTab] = useState('overview');
+  const { user } = useAuth();
+  const [statistics, setStatistics] = useState(null);
   const [users, setUsers] = useState([]);
-  const [tickets, setTickets] = useState([]);
-  const [stats, setStats] = useState({
-    totalUsers: 0,
-    activeTickets: 0,
-    totalSavings: 0,
-    newUsersThisWeek: 0
-  });
-  const [loading, setLoading] = useState(true);
-  const [modals, setModals] = useState({
-    createUser: false,
-    ticketDetails: false,
-    editUser: false,
-    deleteUser: false
-  });
-  const [selectedTicketId, setSelectedTicketId] = useState(null);
-  const [selectedUserId, setSelectedUserId] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [selectedUser, setSelectedUser] = useState(null);
 
   useEffect(() => {
-    if (!isAdmin()) {
-      return;
+    if (user) {
+      loadDashboardData();
     }
+  }, [user]);
 
-    loadAdminData();
-  }, [isAdmin]);
-
-  const loadAdminData = async () => {
+  const loadDashboardData = async () => {
     setLoading(true);
+    setError('');
+    
     try {
-      // Cargar usuarios usando el servicio de admin
-      const usersResult = adminUserService.getAllUsers();
+      const [dashboardResult, usersResult] = await Promise.all([
+        adminService.getDashboard(),
+        adminService.getAllUsers()
+      ]);
+
+      if (dashboardResult.success) {
+        setStatistics(dashboardResult.statistics);
+      } else {
+        setError(dashboardResult.error);
+      }
+
       if (usersResult.success) {
         setUsers(usersResult.users);
-        calculateStats(usersResult.users);
+      } else {
+        setError(usersResult.error);
       }
-
-      // Cargar tickets
-      const ticketsResult = ticketService.getAllTickets();
-      if (ticketsResult.success) {
-        setTickets(ticketsResult.tickets);
-      }
-    } catch (error) {
-      console.error('Error loading admin data:', error);
+    } catch (err) {
+      setError('Error al cargar datos del dashboard');
     } finally {
       setLoading(false);
     }
   };
 
-  const calculateStats = (usersList) => {
-    const now = new Date();
-    const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-    
-    const totalSavings = usersList.reduce((sum, user) => sum + (user.stats?.totalSavings || 0), 0);
-    const newUsersThisWeek = usersList.filter(user => 
-      new Date(user.createdAt) >= oneWeekAgo
-    ).length;
-
-    setStats({
-      totalUsers: usersList.length,
-      activeTickets: tickets.filter(t => t.status !== 'closed').length,
-      totalSavings,
-      newUsersThisWeek
-    });
-  };
-
-  const handleTicketStatusUpdate = async (ticketId, newStatus) => {
-    const result = ticketService.updateTicketStatus(ticketId, newStatus);
-    if (result.success) {
-      setTickets(tickets.map(ticket => 
-        ticket.id === ticketId 
-          ? { ...ticket, status: newStatus, updatedAt: new Date().toISOString() }
-          : ticket
-      ));
+  const handleViewUser = async (userId) => {
+    try {
+      const result = await adminService.getUserDetail(userId);
+      if (result.success) {
+        setSelectedUser(result.user);
+      } else {
+        setError(result.error);
+      }
+    } catch (err) {
+      setError('Error al cargar detalles del usuario');
     }
   };
 
-  // Funciones para manejar modales
-  const openModal = (modalType, data = null) => {
-    setModals(prev => ({ ...prev, [modalType]: true }));
-    if (data) {
-      setSelectedTicketId(data);
-    }
-  };
-
-  const closeModal = (modalType) => {
-    setModals(prev => ({ ...prev, [modalType]: false }));
-    if (modalType === 'ticketDetails') {
-      setSelectedTicketId(null);
-    }
-  };
-
-  // Función para manejar éxito de crear usuario
-  const handleUserCreated = () => {
-    loadAdminData(); // Recargar datos
-  };
-
-  // Función para manejar éxito de editar usuario
-  const handleUserUpdated = () => {
-    loadAdminData(); // Recargar datos
-  };
-
-  // Función para manejar eliminación de usuario
-  const handleUserDeleted = () => {
-    loadAdminData(); // Recargar datos
-  };
-
-  // Función para abrir modal de editar usuario
-  const handleEditUser = (userId) => {
-    setSelectedUserId(userId);
-    openModal('editUser');
-  };
-
-  // Función para abrir modal de eliminar usuario
-  const handleDeleteUser = (userId) => {
-    setSelectedUserId(userId);
-    openModal('deleteUser');
-  };
-
-  const getStatusIcon = (status) => {
-    switch (status) {
-      case 'open': return <FaExclamationTriangle className="status-icon open" />;
-      case 'in_progress': return <FaClock className="status-icon in-progress" />;
-      case 'closed': return <FaCheckCircle className="status-icon closed" />;
-      default: return <FaTimesCircle className="status-icon" />;
-    }
-  };
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'open': return 'danger';
-      case 'in_progress': return 'warning';  
-      case 'closed': return 'success';
-      default: return 'secondary';
-    }
-  };
-
-  if (!isAdmin()) {
+  if (!user || !user.correo || user.correo !== 'admin@pascualbravo.edu.co') {
     return (
-      <div className="admin-error">
-        <h2>Acceso Denegado</h2>
-        <p>No tienes permisos para acceder al panel de administración.</p>
+      <div className="admin-dashboard">
+        <div className="access-denied">
+          <h2>Acceso Denegado</h2>
+          <p>No tienes permisos de administrador para acceder a esta página.</p>
+        </div>
       </div>
     );
   }
 
   if (loading) {
     return (
-      <div className="admin-loading">
-        <div className="loader"></div>
-        <p>Cargando panel de administración...</p>
+      <div className="admin-dashboard">
+        <div className="loading">
+          <div className="spinner"></div>
+          <p>Cargando dashboard de administrador...</p>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="admin-dashboard">
-      {/* Header */}
       <div className="admin-header">
         <h1>Panel de Administración</h1>
-        <p>Bienvenido, {user?.firstName}. Gestiona usuarios, tickets y estadísticas.</p>
+        <p>Gestión completa del sistema Ahorra Oink</p>
+        <div className="admin-actions">
+          <a href="/admin/recovery" className="admin-action-btn">
+            <FaTrashRestore />
+            Recuperar Cuentas
+          </a>
+        </div>
       </div>
 
-      {/* Navigation Tabs */}
-      <div className="admin-tabs">
-        <button 
-          className={`tab ${activeTab === 'overview' ? 'active' : ''}`}
-          onClick={() => setActiveTab('overview')}
-        >
-          <FaChartBar /> Resumen
-        </button>
-        <button 
-          className={`tab ${activeTab === 'users' ? 'active' : ''}`}
-          onClick={() => setActiveTab('users')}
-        >
-          <FaUsers /> Usuarios
-        </button>
-        <button 
-          className={`tab ${activeTab === 'tickets' ? 'active' : ''}`}
-          onClick={() => setActiveTab('tickets')}
-        >
-          <FaTicketAlt /> Tickets
-        </button>
-        <button 
-          className={`tab ${activeTab === 'settings' ? 'active' : ''}`}
-          onClick={() => setActiveTab('settings')}
-        >
-          <FaCog /> Configuración
-        </button>
-      </div>
+      {error && (
+        <div className="error-message">
+          {error}
+        </div>
+      )}
 
-      {/* Tab Content */}
-      <div className="admin-content">
-        {activeTab === 'overview' && (
-          <div className="overview-tab">
-            {/* Stats Cards */}
-            <div className="stats-grid">
-              <div className="stat-card users">
-                <div className="stat-icon">
-                  <FaUsers />
-                </div>
-                <div className="stat-info">
-                  <h3>Total Usuarios</h3>
-                  <p className="stat-value">{stats.totalUsers}</p>
-                  <span className="stat-subtitle">
-                    {stats.newUsersThisWeek} nuevos esta semana
-                  </span>
-                </div>
-              </div>
-
-              <div className="stat-card tickets">
-                <div className="stat-icon">
-                  <FaTicketAlt />
-                </div>
-                <div className="stat-info">
-                  <h3>Tickets Activos</h3>
-                  <p className="stat-value">{stats.activeTickets}</p>
-                  <span className="stat-subtitle">
-                    {tickets.filter(t => t.status === 'open').length} sin responder
-                  </span>
-                </div>
-              </div>
-
-              <div className="stat-card savings">
-                <div className="stat-icon">
-                  <FaChartBar />
-                </div>
-                <div className="stat-info">
-                  <h3>Ahorros Totales</h3>
-                  <p className="stat-value">${stats.totalSavings.toLocaleString()}</p>
-                  <span className="stat-subtitle">Suma de todos los usuarios</span>
-                </div>
-              </div>
-
-              <div className="stat-card growth">
-                <div className="stat-icon">
-                  <FaUserPlus />
-                </div>
-                <div className="stat-info">
-                  <h3>Crecimiento</h3>
-                  <p className="stat-value">+{Math.round((stats.newUsersThisWeek / stats.totalUsers) * 100)}%</p>
-                  <span className="stat-subtitle">Esta semana</span>
-                </div>
-              </div>
+      {statistics && (
+        <div className="stats-grid">
+          {/* Estadísticas principales */}
+          <div className="stat-card">
+            <div className="stat-icon">
+              <FaUsers />
             </div>
-
-            {/* Recent Activity */}
-            <div className="recent-activity">
-              <h3>Actividad Reciente</h3>
-              <div className="activity-list">
-                {tickets.slice(0, 5).map(ticket => (
-                  <div key={ticket.id} className="activity-item">
-                    {getStatusIcon(ticket.status)}
-                    <div className="activity-info">
-                      <span className="activity-title">{ticket.title}</span>
-                      <span className="activity-meta">
-                        Por {ticket.userName} - {new Date(ticket.createdAt).toLocaleDateString()}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
+            <div className="stat-content">
+              <h3>{statistics.users.total}</h3>
+              <p>Total Usuarios</p>
+              <small>{statistics.users.active} activos este mes</small>
             </div>
           </div>
-        )}
 
-        {activeTab === 'users' && (
-          <div className="users-tab">
-            <div className="tab-header">
-              <h3>Gestión de Usuarios</h3>
-              <div className="tab-actions">
-                <button 
-                  className="btn btn-primary"
-                  onClick={() => openModal('createUser')}
-                >
-                  <FaUserPlus /> Crear Usuario
-                </button>
-              </div>
+          <div className="stat-card">
+            <div className="stat-icon">
+              <FaDollarSign />
             </div>
-
-            <div className="users-table">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Usuario</th>
-                    <th>Nombre</th>
-                    <th>Rol</th>
-                    <th>Registro</th>
-                    <th>Ahorros</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {users.map(userData => (
-                    <tr key={userData.id}>
-                      <td>@{userData.username}</td>
-                      <td>{userData.firstName} {userData.lastName}</td>
-                      <td>
-                        <span className={`role-badge ${userData.role}`}>
-                          {userData.role === 'admin' ? 'Admin' : 'Usuario'}
-                        </span>
-                      </td>
-                      <td>{new Date(userData.createdAt).toLocaleDateString()}</td>
-                      <td>${(userData.stats?.totalSavings || 0).toLocaleString()}</td>
-                      <td>
-                        <span className="status-badge active">Activo</span>
-                      </td>
-                      <td>
-                        <div className="action-buttons">
-                          <button 
-                            className="btn-icon btn-info" 
-                            title="Ver detalles"
-                            onClick={() => {/* TODO: Implementar ver detalles */}}
-                          >
-                            <FaEye />
-                          </button>
-                          <button 
-                            className="btn-icon btn-warning" 
-                            title="Editar usuario"
-                            onClick={() => handleEditUser(userData.id)}
-                          >
-                            <FaEdit />
-                          </button>
-                          <button 
-                            className="btn-icon btn-danger" 
-                            title="Eliminar usuario"
-                            onClick={() => handleDeleteUser(userData.id)}
-                            disabled={userData.id === user?.id} // No permitir eliminar a sí mismo
-                          >
-                            <FaTrash />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="stat-content">
+              <h3>${statistics.transactions.balance.toLocaleString()}</h3>
+              <p>Balance Total</p>
+              <small>Ingresos: ${statistics.transactions.income.toLocaleString()}</small>
             </div>
           </div>
-        )}
 
-        {activeTab === 'tickets' && (
-          <div className="tickets-tab">
-            <div className="tab-header">
-              <h3>Gestión de Tickets</h3>
-              <div className="tab-filters">
-                <select>
-                  <option value="">Todos los estados</option>
-                  <option value="open">Abiertos</option>
-                  <option value="in_progress">En progreso</option>
-                  <option value="closed">Cerrados</option>
-                </select>
-              </div>
+          <div className="stat-card">
+            <div className="stat-icon">
+              <FaChartLine />
             </div>
+            <div className="stat-content">
+              <h3>{statistics.transactions.total}</h3>
+              <p>Total Transacciones</p>
+              <small>Gastos: ${statistics.transactions.expense.toLocaleString()}</small>
+            </div>
+          </div>
 
-            <div className="tickets-list">
-              {tickets.map(ticket => (
-                <div key={ticket.id} className="ticket-card">
-                  <div className="ticket-header">
-                    <div className="ticket-title">
-                      {getStatusIcon(ticket.status)}
-                      <h4>{ticket.title}</h4>
-                    </div>
-                    <div className="ticket-meta">
-                      <span className="ticket-id">#{ticket.id.slice(-6)}</span>
-                      <span className={`priority-badge ${ticket.priority}`}>
-                        {ticket.priority === 'high' ? 'Alta' : 
-                         ticket.priority === 'medium' ? 'Media' : 'Baja'}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <div className="ticket-body">
-                    <p>{ticket.description}</p>
-                    <div className="ticket-info">
-                      <span>Por: {ticket.userName} (@{ticket.username})</span>
-                      <span>Categoría: {ticket.category}</span>
-                      <span>Creado: {new Date(ticket.createdAt).toLocaleDateString()}</span>
-                    </div>
-                  </div>
-                  
-                  <div className="ticket-actions">
-                    <select 
-                      value={ticket.status}
-                      onChange={(e) => handleTicketStatusUpdate(ticket.id, e.target.value)}
-                      className={`status-select ${getStatusColor(ticket.status)}`}
-                    >
-                      <option value="open">Abierto</option>
-                      <option value="in_progress">En progreso</option>
-                      <option value="closed">Cerrado</option>
-                    </select>
+          <div className="stat-card">
+            <div className="stat-icon">
+              <FaPiggyBank />
+            </div>
+            <div className="stat-content">
+              <h3>${statistics.transactions.savings.toLocaleString()}</h3>
+              <p>Total Ahorros</p>
+              <small>Promedio por usuario</small>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Lista de usuarios */}
+      <div className="users-section">
+        <h2>Usuarios del Sistema</h2>
+        <div className="users-table-container">
+          <table className="users-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Correo</th>
+                <th>Transacciones</th>
+                <th>Balance</th>
+                <th>Metas de Ahorro</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {users.map(user => (
+                <tr key={user.id}>
+                  <td>{user.id}</td>
+                  <td>{user.nombrecompleto}</td>
+                  <td>{user.correo}</td>
+                  <td>{user.transaction_count}</td>
+                  <td className={user.balance >= 0 ? 'positive' : 'negative'}>
+                    ${user.balance.toLocaleString()}
+                  </td>
+                  <td>{user.savings_goals_count}</td>
+                  <td>
                     <button 
-                      className="btn btn-outline btn-sm"
-                      onClick={() => openModal('ticketDetails', ticket.id)}
+                      className="action-btn view-btn"
+                      onClick={() => handleViewUser(user.id)}
+                      title="Ver detalles"
                     >
-                      Ver detalles
+                      <FaEye />
                     </button>
-                  </div>
-                </div>
+                    <button 
+                      className="action-btn edit-btn"
+                      onClick={() => window.open(`http://localhost:8000/admin/accounts/usuario/${user.id}/change/`, '_blank')}
+                      title="Editar en admin"
+                    >
+                      <FaEdit />
+                    </button>
+                  </td>
+                </tr>
               ))}
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'settings' && (
-          <div className="settings-tab">
-            <h3>Configuración del Sistema</h3>
-            <div className="settings-sections">
-              <div className="settings-section">
-                <h4>Configuración General</h4>
-                <div className="settings-options">
-                  <label>
-                    <input type="checkbox" defaultChecked />
-                    Permitir registro de nuevos usuarios
-                  </label>
-                  <label>
-                    <input type="checkbox" defaultChecked />
-                    Notificaciones por email
-                  </label>
-                  <label>
-                    <input type="checkbox" />
-                    Modo mantenimiento
-                  </label>
-                </div>
-              </div>
-              
-              <div className="settings-section">
-                <h4>Límites del Sistema</h4>
-                <div className="settings-inputs">
-                  <label>
-                    Máximo de tickets por usuario por día:
-                    <input type="number" defaultValue="5" />
-                  </label>
-                  <label>
-                    Tiempo de sesión (horas):
-                    <input type="number" defaultValue="24" />
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      {/* Modales */}
-      <CreateUserModal
-        isOpen={modals.createUser}
-        onClose={() => closeModal('createUser')}
-        onSuccess={handleUserCreated}
-      />
+      {/* Modal de detalles de usuario */}
+      {selectedUser && (
+        <div className="modal-overlay" onClick={() => setSelectedUser(null)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Detalles de {selectedUser.nombrecompleto}</h2>
+              <button 
+                className="close-btn"
+                onClick={() => setSelectedUser(null)}
+              >
+                ×
+              </button>
+            </div>
+            
+            <div className="modal-body">
+              <div className="user-info">
+                <h3>Información Personal</h3>
+                <p><strong>ID:</strong> {selectedUser.id}</p>
+                <p><strong>Nombre:</strong> {selectedUser.nombrecompleto}</p>
+                <p><strong>Correo:</strong> {selectedUser.correo}</p>
+              </div>
 
-      <TicketDetailsModal
-        isOpen={modals.ticketDetails}
-        onClose={() => closeModal('ticketDetails')}
-        ticketId={selectedTicketId}
-      />
+              <div className="user-stats">
+                <h3>Estadísticas Financieras</h3>
+                <div className="stats-row">
+                  <div className="stat-item">
+                    <span className="stat-label">Total Transacciones:</span>
+                    <span className="stat-value">{selectedUser.statistics.total_transactions}</span>
+                  </div>
+                  <div className="stat-item">
+                    <span className="stat-label">Ingresos:</span>
+                    <span className="stat-value positive">${selectedUser.statistics.total_income.toLocaleString()}</span>
+                  </div>
+                  <div className="stat-item">
+                    <span className="stat-label">Gastos:</span>
+                    <span className="stat-value negative">${selectedUser.statistics.total_expense.toLocaleString()}</span>
+                  </div>
+                  <div className="stat-item">
+                    <span className="stat-label">Ahorros:</span>
+                    <span className="stat-value positive">${selectedUser.statistics.total_savings.toLocaleString()}</span>
+                  </div>
+                  <div className="stat-item">
+                    <span className="stat-label">Balance:</span>
+                    <span className={`stat-value ${selectedUser.statistics.balance >= 0 ? 'positive' : 'negative'}`}>
+                      ${selectedUser.statistics.balance.toLocaleString()}
+                    </span>
+                  </div>
+                </div>
+              </div>
 
-      <EditUserModal
-        isOpen={modals.editUser}
-        onClose={() => closeModal('editUser')}
-        userId={selectedUserId}
-        onSuccess={handleUserUpdated}
-      />
+              <div className="recent-transactions">
+                <h3>Transacciones Recientes</h3>
+                <div className="transactions-list">
+                  {selectedUser.recent_transactions.slice(0, 10).map(tx => (
+                    <div key={tx.id} className="transaction-item">
+                      <div className="tx-info">
+                        <span className={`tx-type ${tx.type}`}>
+                          {tx.type === 'income' ? '💰' : tx.type === 'savings' ? '🏦' : '💸'}
+                        </span>
+                        <span className="tx-description">{tx.description}</span>
+                        <span className="tx-category">{tx.category || 'Sin categoría'}</span>
+                      </div>
+                      <div className="tx-amount">
+                        ${tx.amount.toLocaleString()}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
 
-      <DeleteUserModal
-        isOpen={modals.deleteUser}
-        onClose={() => closeModal('deleteUser')}
-        userId={selectedUserId}
-        onSuccess={handleUserDeleted}
-      />
+              <div className="savings-goals">
+                <h3>Metas de Ahorro</h3>
+                <div className="goals-list">
+                  {selectedUser.savings_goals.map(goal => (
+                    <div key={goal.id} className="goal-item">
+                      <div className="goal-info">
+                        <h4>{goal.name}</h4>
+                        <p>${goal.current_amount.toLocaleString()} / ${goal.target_amount.toLocaleString()}</p>
+                      </div>
+                      <div className="goal-progress">
+                        <div className="progress-bar">
+                          <div 
+                            className="progress-fill" 
+                            style={{ width: `${goal.progress_percentage}%` }}
+                          ></div>
+                        </div>
+                        <span className="progress-text">{goal.progress_percentage.toFixed(1)}%</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

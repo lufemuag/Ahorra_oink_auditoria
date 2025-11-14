@@ -1,97 +1,95 @@
-import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+// src/components/layout/Header.jsx
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { 
-  FaUser, 
-  FaHome, 
-  FaInfoCircle, 
-  FaBars, 
-  FaTimes, 
-  FaSignOutAlt,
-  FaPiggyBank,
-  FaUserShield,
-  FaLifeRing,
-  FaCoins,
-  FaTrophy,
-  FaChartLine,
-  FaBook,
-  FaCog,
-  FaChevronDown
+import { useAchievements } from '../../context/AchievementsContext'; // 👈 NUEVO
+import {
+  FaUser, FaTimes, FaSignOutAlt, FaTrophy, FaChartLine, FaBook, FaCog, FaChevronDown, FaShieldAlt
 } from 'react-icons/fa';
+import logoImage from '../../assets/logo.png';
+import menuIcon from '../../assets/iconomenu.png';
 import './Header.css';
 
 const Header = () => {
-  const { user, logout, isAuthenticated, isAdmin } = useAuth();
+  const { user, logout, isAuthenticated } = useAuth();
+  const { unlockAchievement } = useAchievements(); // 👈 NUEVO
   const location = useLocation();
+  const navigate = useNavigate();
+
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCoinsMenuOpen, setIsCoinsMenuOpen] = useState(false);
 
-  // Ya no necesitamos navegación tradicional, solo el menú de monedas
+  // Datos del usuario
+  const displayName = user?.nombre || 'Usuario';
+  const displayEmail = user?.correo || '';
+  const displayHandle = displayEmail ? `@${displayEmail.split('@')[0]}` : '@usuario';
 
   const coinsMenuItems = [
-    { name: 'Logros', href: '/achievements', icon: FaTrophy },
-    { name: 'Gastos', href: '/expenses', icon: FaChartLine },
-    { name: 'Estadísticas', href: '/statistics', icon: FaChartLine },
-    { name: 'Metodologías', href: '/methodologies', icon: FaBook },
-    { name: 'Configuración', href: '/settings', icon: FaCog },
-    { name: 'Cerrar sesión', href: '#', icon: FaSignOutAlt, action: 'logout' }
+    { name: 'Logros',        href: '/achievements',   icon: FaTrophy },
+    { name: 'Gastos',        href: '/expenses',       icon: FaChartLine },
+    { name: 'Estadísticas',  href: '/statistics',     icon: FaChartLine },
+    { name: 'Metodologías',  href: '/methodologies',  icon: FaBook },
+    { name: 'Configuración', href: '/settings',       icon: FaCog },
+    ...(user?.correo === 'admin@pascualbravo.edu.co' ? [{ name: 'Administrador', href: '/admin', icon: FaShieldAlt }] : []),
+    { name: 'Cerrar sesión', action: 'logout',        icon: FaSignOutAlt },
   ];
 
   const handleLogout = () => {
     logout();
     setIsMobileMenuOpen(false);
     setIsCoinsMenuOpen(false);
+    navigate('/login', { replace: true });
   };
 
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
-    setIsCoinsMenuOpen(false);
-  };
+  const toggleMobileMenu = () => { setIsMobileMenuOpen(o => !o); setIsCoinsMenuOpen(false); };
+  const closeMobileMenu  = () => setIsMobileMenuOpen(false);
+  const toggleCoinsMenu  = () => { setIsCoinsMenuOpen(o => !o); setIsMobileMenuOpen(false); };
+  const closeCoinsMenu   = () => setIsCoinsMenuOpen(false);
 
-  const closeMobileMenu = () => {
-    setIsMobileMenuOpen(false);
-  };
+  // ========= 🔔 Integración global de logros =========
+  useEffect(() => {
+    if (!isAuthenticated) return;
 
-  const toggleCoinsMenu = () => {
-    setIsCoinsMenuOpen(!isCoinsMenuOpen);
-    setIsMobileMenuOpen(false);
-  };
+    // A) Escuchar CustomEvent global: window.dispatchEvent(new CustomEvent('unlock-achievement', { detail: { id: N } }))
+    const onUnlockEvent = (e) => {
+      const id = Number(e?.detail?.id);
+      if (Number.isFinite(id)) unlockAchievement(id);
+    };
+    window.addEventListener('unlock-achievement', onUnlockEvent);
 
-  const closeCoinsMenu = () => {
-    setIsCoinsMenuOpen(false);
-  };
+    // B) Exponer helper global (opcional): window.unlockAchievement(N)
+    window.unlockAchievement = (id) => {
+      const n = Number(id);
+      if (Number.isFinite(n)) unlockAchievement(n);
+    };
 
-  const handleCoinsMenuItemClick = (item) => {
-    if (item.action === 'logout') {
-      handleLogout();
-    } else {
-      closeCoinsMenu();
-    }
-  };
+    return () => {
+      window.removeEventListener('unlock-achievement', onUnlockEvent);
+      delete window.unlockAchievement;
+    };
+  }, [isAuthenticated, unlockAchievement]);
+  // ================================================
 
-  if (!isAuthenticated) {
-    return null;
-  }
+  if (!isAuthenticated) return null;
 
   return (
     <header className="header">
       <div className="header-container">
         {/* Logo */}
         <Link to="/dashboard" className="header-logo" onClick={closeMobileMenu}>
-          <FaPiggyBank className="logo-icon" />
-          <span className="logo-text">Ahorra Oink</span>
+          <img src={logoImage} alt="Ahorra Oink" className="logo-img" />
         </Link>
 
-        {/* Navigation removed - only coins menu */}
+        {/* Bienvenida al usuario */}
+        <div className="header-user">
+          <FaUser className="header-user-icon" />
+          <span className="header-user-name">Hola, {displayName}</span>
+        </div>
 
         {/* Coins Menu - Desktop */}
         <div className="header-coins-menu desktop-coins-menu">
-          <button 
-            className="coins-menu-btn"
-            onClick={toggleCoinsMenu}
-            title="Menú de opciones"
-          >
-            <FaCoins className="coins-icon" />
+          <button className="coins-menu-btn" onClick={toggleCoinsMenu} title="Menú de opciones">
+            <img src={menuIcon} alt="Opciones" className="coins-img" />
             <FaChevronDown className={`chevron-icon ${isCoinsMenuOpen ? 'rotated' : ''}`} />
           </button>
 
@@ -99,12 +97,22 @@ const Header = () => {
             <div className="coins-dropdown">
               {coinsMenuItems.map((item) => {
                 const Icon = item.icon;
-                return (
+                return item.action === 'logout' ? (
+                  <button
+                    key={item.name}
+                    type="button"
+                    className="coins-menu-item as-button"
+                    onClick={handleLogout}
+                  >
+                    <Icon className="coins-menu-icon" />
+                    <span>{item.name}</span>
+                  </button>
+                ) : (
                   <Link
                     key={item.name}
                     to={item.href}
                     className="coins-menu-item"
-                    onClick={() => handleCoinsMenuItemClick(item)}
+                    onClick={closeCoinsMenu}
                   >
                     <Icon className="coins-menu-icon" />
                     <span>{item.name}</span>
@@ -115,40 +123,45 @@ const Header = () => {
           )}
         </div>
 
-        {/* User info removed - only coins menu */}
-
-        {/* Mobile Menu Button */}
-        <button 
-          className="mobile-menu-btn"
-          onClick={toggleMobileMenu}
-          aria-label="Toggle menu"
-        >
-          {isMobileMenuOpen ? <FaTimes /> : <FaBars />}
+        {/* Botón menú móvil */}
+        <button className="mobile-menu-btn" onClick={toggleMobileMenu} aria-label="Abrir menú">
+          <img src={menuIcon} alt="Menú" className="menu-img" />
         </button>
       </div>
 
-      {/* Mobile Menu - Simplified */}
+      {/* Menú móvil */}
       <div className={`mobile-menu ${isMobileMenuOpen ? 'open' : ''}`}>
+        <button className="mobile-close-btn" onClick={closeMobileMenu} aria-label="Cerrar menú">
+          <FaTimes />
+        </button>
+
         <div className="mobile-user-info">
-          <div className="user-avatar">
-            <FaUser />
-          </div>
+          <div className="user-avatar"><FaUser /></div>
           <div>
-            <div className="user-name">{user?.firstName || 'Usuario'} {user?.lastName || ''}</div>
-            <div className="user-email">@{user?.username || 'usuario'}</div>
+            <div className="user-name">{displayName}</div>
+            <div className="user-email">{displayHandle}</div>
           </div>
         </div>
 
         <nav className="mobile-nav">
           {coinsMenuItems.map((item) => {
             const Icon = item.icon;
-            
-            return (
+            return item.action === 'logout' ? (
+              <button
+                key={item.name}
+                type="button"
+                className="mobile-nav-link as-button"
+                onClick={handleLogout}
+              >
+                <Icon className="nav-icon" />
+                <span>{item.name}</span>
+              </button>
+            ) : (
               <Link
                 key={item.name}
                 to={item.href}
                 className="mobile-nav-link"
-                onClick={() => handleCoinsMenuItemClick(item)}
+                onClick={closeMobileMenu}
               >
                 <Icon className="nav-icon" />
                 <span>{item.name}</span>
@@ -158,15 +171,9 @@ const Header = () => {
         </nav>
       </div>
 
-      {/* Overlay */}
-      {isMobileMenuOpen && (
-        <div className="mobile-menu-overlay" onClick={closeMobileMenu} />
-      )}
-
-      {/* Coins Menu Overlay */}
-      {isCoinsMenuOpen && (
-        <div className="coins-menu-overlay" onClick={closeCoinsMenu} />
-      )}
+      {/* Overlays */}
+      {isMobileMenuOpen && <div className="mobile-menu-overlay" onClick={closeMobileMenu} />}
+      {isCoinsMenuOpen &&  <div className="coins-menu-overlay"  onClick={closeCoinsMenu}  />}
     </header>
   );
 };

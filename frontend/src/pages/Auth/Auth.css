@@ -1,82 +1,46 @@
-/* Nuevo diseño de Login - Ahorra Oink */
+/* ===========================
+   Auth.css — Registro CerdoSign
+   =========================== */
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+:root{
+  --green-dk: #0b3c2f;
+  --green:    #2f6e4f;
+  --green-md: #3c7e57;
+  --green-li: #6ea77f;
+  --yellow:   #f4d03f;
+  --paper:    #f6ed9e;           /* Panel derecho claro (match mock) */
+  --ink:      #1e1e1e;
+
+  --radius-lg: 34px;             /* más redondeado */
+  --shadow-xl: 0 36px 80px rgba(0,0,0,.35);
 }
 
-.auth-container {
-  font-family: 'Arial', sans-serif;
-  background: linear-gradient(135deg, #2d5016 0%, #4a7c59 50%, #5d8a66 100%);
+/* Reset básico */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body, #root { height: 100%; }
+body { font-family: 'Arial', sans-serif; }
+
+/* ===========================
+   Fondo y layout base
+   =========================== */
+.auth-container{
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  color: #333;
+  color: var(--ink);
+  background:
+    radial-gradient(1200px 520px at 50% 30%,
+      #2a6a4f 0%,
+      #225b45 45%,
+      #114233 75%,
+      var(--green-dk) 100%);
 }
 
-/* Header */
-.auth-container .header {
-  background-color: #f4d03f !important;
-  background: #f4d03f !important;
-  padding: 15px 20px !important;
-  display: flex !important;
-  justify-content: space-between !important;
-  align-items: center !important;
-  box-shadow: none !important;
-  position: relative !important;
-  top: auto !important;
-  z-index: auto !important;
-  width: 100% !important;
-  height: auto !important;
-}
-
-.auth-container .logo {
-  color: #2d5016;
-  font-size: 24px;
-  font-weight: bold;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  display: flex;
-  gap: 5px;
-}
-
-.auth-container .logo-box {
-  border: 2px solid #2d5016;
-  padding: 5px 10px;
-  border-radius: 5px;
-}
-
-.auth-container .coins-icon {
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(45deg, #f39c12, #e67e22);
-  border-radius: 50%;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 20px;
-  font-weight: bold;
-}
-
-/* Asegurar que el header sea amarillo en todas las páginas de auth */
-.auth-container .header,
-.terms-container .terms-header {
-  background-color: #f4d03f !important;
-  background: #f4d03f !important;
-}
-
-/* Override cualquier estilo del header principal */
-.auth-container .header,
-.terms-container .terms-header {
-  background: linear-gradient(135deg, #f4d03f, #f4d03f) !important;
-  background-color: #f4d03f !important;
-}
-
-/* Main container */
-.main-container {
+/* ===========================
+   Contenedor central
+   =========================== */
+.main-container{
   flex: 1;
   display: flex;
   justify-content: center;
@@ -84,664 +48,313 @@
   padding: 40px 20px;
 }
 
-.login-wrapper {
+/* Card de registro (dos columnas) */
+.register-card{
   display: flex;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 25px;
+  width: min(1040px, 92vw);
+  border-radius: var(--radius-lg);
   overflow: hidden;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-  max-width: 800px;
-  width: 100%;
+  box-shadow: var(--shadow-xl);
+  background: #2e6a4b; /* evita “fugas” entre paneles */
 }
 
-/* Login form section */
-.login-section {
-  background-color: #f7f3a0;
-  padding: 50px 40px;
-  flex: 1;
-  border-radius: 0 25px 25px 0;
-}
-
-.login-title {
-  color: #2d5016;
-  font-size: 28px;
-  font-weight: bold;
-  margin-bottom: 10px;
-}
-
-.login-subtitle {
-  color: #5d8a66;
-  font-size: 16px;
-  margin-bottom: 40px;
-}
-
-.form-group {
-  margin-bottom: 25px;
-}
-
-.form-label {
-  display: block;
-  color: #5d8a66;
-  font-size: 14px;
-  margin-bottom: 8px;
-  font-weight: 500;
-}
-
-.form-input {
-  width: 100%;
-  padding: 12px 15px;
-  border: none;
-  border-bottom: 2px solid #5d8a66;
-  background: transparent;
-  font-size: 16px;
-  color: #333;
-  outline: none;
-  transition: border-color 0.3s ease;
-}
-
-.form-input:focus {
-  border-bottom-color: #2d5016;
-}
-
-.form-input.error {
-  border-bottom-color: #e74c3c;
-}
-
-.form-input::placeholder {
-  color: #666;
-}
-
-.form-error {
-  color: #e74c3c;
-  font-size: 12px;
-  margin-top: 4px;
-  display: block;
-}
-
-.error-message {
-  background: rgba(231, 76, 60, 0.1);
-  border: 1px solid #e74c3c;
-  color: #e74c3c;
-  padding: 12px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  font-size: 14px;
-}
-
-.forgot-password {
-  color: #5d8a66;
-  font-size: 12px;
-  text-decoration: none;
-  float: right;
-  margin-top: 5px;
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-.forgot-password:hover {
-  text-decoration: underline;
-}
-
-.login-button {
-  width: 100%;
-  background: linear-gradient(135deg, #4a7c59, #2d5016);
-  color: white;
-  border: none;
-  padding: 15px;
-  border-radius: 25px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  margin-top: 30px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+/* Panel izquierdo */
+.register-left{
+  flex: 0 0 46%;
+  background: linear-gradient(160deg, #357a58 0%, #2e6a4b 60%);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  padding: 52px 36px;
 }
 
-.login-button:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(45, 80, 22, 0.3);
+/* Animación de flotado suave */
+@keyframes floaty {
+  0%   { transform: translate3d(0, 0, 0) rotate(0deg); }
+  50%  { transform: translate3d(0, -10px, 0) rotate(-1deg); }
+  100% { transform: translate3d(0, 0, 0) rotate(0deg); }
 }
 
-.login-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+.pig-image--mock{
+  width: 92%;
+  max-width: 420px;
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 14px 28px rgba(0,0,0,.35));
+  animation: floaty 4.6s ease-in-out infinite;
+  will-change: transform;
 }
 
-.register-link {
-  text-align: center;
-  margin-top: 20px;
+@media (prefers-reduced-motion: reduce){
+  .pig-image--mock{ animation: none; }
+}
+
+.pig-image--mock:hover{
+  animation-duration: 3.6s;
+}
+
+/* Panel derecho */
+.register-right{
+  flex: 1;
+  background: var(--paper);
+  padding: 54px 56px 44px;
+  border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+}
+
+/* Títulos */
+.login-title{
+  color:#2b704e;
+  font-weight: 900;
+  margin-bottom: 6px;
+}
+.login-title.strong{
+  font-size: 40px;
+  line-height: 1.1;
+  letter-spacing: .2px;
+}
+
+.login-subtitle{
+  color:#2b704e;
+  opacity:.85;
+  font-weight: 700;
+  margin-bottom: 28px;
   font-size: 14px;
-  color: #5d8a66;
 }
 
-.register-link a {
-  color: #2d5016;
-  text-decoration: none;
-  font-weight: bold;
+/* ===========================
+   Formulario estilo subrayado
+   =========================== */
+.form-group{ margin-bottom: 22px; }
+
+.form-label{
+  display:block;
+  color:#7aa884;
+  font-weight: 800;
+  font-size: 13px;
+  margin-bottom: 6px;
 }
 
-.register-link a:hover {
-  text-decoration: underline;
+.form-input{
+  width: 100%;
+  font-size: 15px;
+  color: var(--ink);
+  outline: none;
+  background: transparent;
+  padding: 12px 2px;
+  border: none;
+  border-bottom: 1.5px solid rgba(43,112,78,.32);
+  transition: border-color .2s ease;
 }
 
-/* Terms and conditions checkbox */
-.terms-checkbox {
+.form-input:focus{ border-bottom-color: rgba(43,112,78,.75); }
+.form-input::placeholder{ color: #666; }
+.form-input.error{ border-bottom-color: #e74c3c; }
+
+.form-error{
+  color:#e74c3c;
+  font-size: 12px;
+  margin-top: 6px;
+  display:block;
+}
+
+/* ===========================
+   Wrappers unificados
+   =========================== */
+
+/* Base para nombre / contraseña (y cualquier input simple) */
+.input-wrapper {
+  position: relative;            /* para el botón ojo */
+  display: flex;
+  align-items: center;
+  border-bottom: 1.5px solid rgba(43,112,78,.32);
+  padding-right: 6px;
+}
+.input-wrapper.error { border-bottom-color:#e74c3c; }
+.input-wrapper .form-input {
+  border: none;
+  outline: none;
+  flex: 1;
+  padding: 12px 2px;
+  background: transparent;
+  font-size: 15px;
+}
+/* Si el input lleva botón a la derecha (contraseña) */
+.form-input.with-toggle { padding-right: 36px; }
+
+/* Correo con dominio fijo */
+.email-wrapper {
+  display: flex;
+  align-items: center;
+  border-bottom: 1.5px solid rgba(43,112,78,.32);
+  padding-right: 6px;
+}
+.email-wrapper.error { border-bottom-color: #e74c3c; }
+.email-wrapper .form-input {
+  border: none;
+  outline: none;
+  flex: 1;
+  padding: 12px 2px;
+  background: transparent;
+  font-size: 15px;
+}
+.email-domain {
+  margin-left: 4px;
+  color: #2b704e;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Botón ojo (mostrar/ocultar) dentro del wrapper */
+.toggle-visibility{
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 16px;
+  color: #2b704e;
+  padding: 6px;
+}
+
+/* ===========================
+   Checkbox y términos
+   =========================== */
+.terms-checkbox{
   display: flex;
   align-items: flex-start;
-  gap: 12px;
-  margin-top: 10px;
+  gap: 10px;
+  margin-top: 6px;
 }
 
-.checkbox-input {
-  width: 18px;
-  height: 18px;
-  margin: 0;
+.checkbox-input{
+  width: 16px; height: 16px;
+  margin: 0; flex-shrink: 0;
+  accent-color: #2b704e;
   cursor: pointer;
-  accent-color: #2d5016;
-  flex-shrink: 0;
   margin-top: 2px;
 }
 
-.checkbox-label {
-  color: #5d8a66;
-  font-size: 14px;
-  line-height: 1.4;
+.checkbox-label{
+  color:#2b704e;
+  font-size: 12px;
+  line-height: 1.35;
   cursor: pointer;
-  margin: 0;
-  display: flex;
-  align-items: flex-start;
-  gap: 4px;
 }
 
-.terms-link {
-  color: #2d5016;
+.terms-link{
+  color:#1e5c3f;
   text-decoration: underline;
-  font-weight: 500;
-  transition: color 0.3s ease;
+  font-weight: 700;
+}
+.terms-link:hover{ color:#2b704e; }
+
+/* ===========================
+   Botón principal
+   =========================== */
+.login-button{
+  width: 260px;
+  margin: 26px auto 0;
+  color: #fff;
+  border: none;
+  padding: 14px 18px;
+  border-radius: 9999px;
+  font-size: 16px;
+  font-weight: 900;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  background: linear-gradient(135deg, #3f7b59, #244f37);
+  box-shadow: 0 10px 22px rgba(19,56,40,.35);
+  transition: transform .2s ease, box-shadow .2s ease, opacity .2s ease;
+}
+.login-button:hover:not(:disabled){ transform: translateY(-2px); }
+.login-button:disabled{ opacity: .6; cursor: not-allowed; }
+
+/* Enlace inferior */
+.register-link{
+  text-align: center;
+  margin-top: 14px;
+  font-size: 13.5px;
+  color:#2b704e;
+}
+.register-link a{
+  color:#1e5c3f;
+  font-weight: 900;
+  text-decoration: none;
+}
+.register-link a:hover{ text-decoration: underline; }
+
+/* Mensaje de error general */
+.error-message{
+  background: rgba(231, 76, 60, 0.08);
+  border: 1px solid #e74c3c;
+  color: #e74c3c;
+  padding: 12px;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  font-size: 14px;
 }
 
-.terms-link:hover {
-  color: #4a7c59;
+/* ===== Toast para páginas de Auth (coincide con Settings) ===== */
+.message{
+  position:fixed;
+  top:1.2rem;
+  right:1.2rem;
+  padding:1rem 1.4rem;
+  border-radius:12px;
+  font-weight:900;
+  z-index:1000;
+  color:#fff;
+  box-shadow:0 10px 22px rgba(0,0,0,.22);
+  animation:slideIn .25s ease;
+}
+.message.success{ background:#4caf50; }
+.message.error{ background:#f44336; }
+.message.info{ background:#2196f3; }
+
+@keyframes slideIn{
+  from{ transform:translateX(100%); opacity:0; }
+  to{ transform:translateX(0); opacity:1; }
 }
 
-/* Character section */
-.character-section {
-  background: linear-gradient(135deg, #4a7c59, #5d8a66);
-  padding: 50px 40px;
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 25px 0 0 25px;
-}
-
-.pig-image-container {
-  width: 200px;
-  height: 200px;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.pig-image {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-  filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.3));
-}
-
-/* Pig body */
-.pig-body {
-  width: 120px;
-  height: 140px;
-  background: #ff9999;
-  border-radius: 60px 60px 40px 40px;
-  position: relative;
-  margin: 0 auto;
-}
-
-/* Pig head */
-.pig-head {
-  width: 100px;
-  height: 80px;
-  background: #ff9999;
-  border-radius: 50px;
-  position: absolute;
-  top: -30px;
-  left: 10px;
-}
-
-/* Hat */
-.pig-hat {
-  width: 80px;
-  height: 20px;
-  background: #cc4444;
-  border-radius: 40px 40px 0 0;
-  position: absolute;
-  top: -15px;
-  left: 10px;
-}
-
-.pig-hat::after {
-  content: '';
-  width: 15px;
-  height: 15px;
-  background: #cc4444;
-  border-radius: 50%;
-  position: absolute;
-  top: -10px;
-  left: 32px;
-}
-
-/* Eyes */
-.pig-eyes {
-  position: absolute;
-  top: 20px;
-  left: 15px;
-  width: 70px;
-  height: 40px;
-}
-
-.pig-eye {
-  width: 25px;
-  height: 25px;
-  background: white;
-  border-radius: 50%;
-  border: 2px solid #333;
-  position: absolute;
-  top: 0;
-}
-
-.pig-eye.left {
-  left: 0;
-}
-
-.pig-eye.right {
-  right: 0;
-}
-
-.pig-eye::after {
-  content: '';
-  width: 8px;
-  height: 8px;
-  background: #333;
-  border-radius: 50%;
-  position: absolute;
-  top: 6px;
-  left: 6px;
-}
-
-/* Glasses */
-.pig-glasses {
-  position: absolute;
-  top: 15px;
-  left: 10px;
-  width: 80px;
-  height: 35px;
-  border: 3px solid #8B4513;
-  border-radius: 20px;
-}
-
-.pig-glasses::after {
-  content: '';
-  width: 10px;
-  height: 3px;
-  background: #8B4513;
-  position: absolute;
-  top: 13px;
-  left: 35px;
-}
-
-/* Snout */
-.pig-snout {
-  width: 30px;
-  height: 25px;
-  background: #ff7777;
-  border-radius: 50%;
-  position: absolute;
-  bottom: 10px;
-  left: 35px;
-}
-
-.pig-snout::after {
-  content: '';
-  width: 8px;
-  height: 6px;
-  background: #cc4444;
-  border-radius: 50%;
-  position: absolute;
-  top: 8px;
-  left: 6px;
-}
-
-.pig-snout::before {
-  content: '';
-  width: 8px;
-  height: 6px;
-  background: #cc4444;
-  border-radius: 50%;
-  position: absolute;
-  top: 8px;
-  right: 6px;
-}
-
-/* Ears */
-.pig-ear {
-  width: 20px;
-  height: 30px;
-  background: #ff9999;
-  border-radius: 50%;
-  position: absolute;
-  top: 10px;
-}
-
-.pig-ear.left {
-  left: -5px;
-  transform: rotate(-30deg);
-}
-
-.pig-ear.right {
-  right: -5px;
-  transform: rotate(30deg);
-}
-
-.pig-ear::after {
-  content: '';
-  width: 12px;
-  height: 18px;
-  background: #ff7777;
-  border-radius: 50%;
-  position: absolute;
-  top: 6px;
-  left: 4px;
-}
-
-/* Arms */
-.pig-arm {
-  width: 15px;
-  height: 40px;
-  background: #ff9999;
-  border-radius: 8px;
-  position: absolute;
-  top: 40px;
-}
-
-.pig-arm.left {
-  left: -10px;
-}
-
-.pig-arm.right {
-  right: -10px;
-}
-
-/* Legs */
-.pig-leg {
-  width: 15px;
-  height: 25px;
-  background: #ff9999;
-  border-radius: 8px;
-  position: absolute;
-  bottom: -20px;
-}
-
-.pig-leg.left {
-  left: 25px;
-}
-
-.pig-leg.right {
-  right: 25px;
-}
-
-/* Hooves */
-.pig-leg::after {
-  content: '';
-  width: 18px;
-  height: 8px;
-  background: #8B4513;
-  border-radius: 0 0 10px 10px;
-  position: absolute;
-  bottom: -8px;
-  left: -1px;
-}
-
-/* Loader styles */
-.loader {
-  width: 20px;
-  height: 20px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top: 2px solid white;
+/* Loader */
+.loader{
+  width: 20px; height: 20px;
+  border: 2px solid rgba(255,255,255,0.35);
+  border-top: 2px solid #fff;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
+.loader.small{ width:16px; height:16px; border-width:2px; }
+@keyframes spin{ to { transform: rotate(360deg); } }
 
-.loader.small {
-  width: 16px;
-  height: 16px;
-  border-width: 2px;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .login-wrapper {
+/* ===========================
+   Responsivo
+   =========================== */
+@media (max-width: 920px){
+  .register-card{
     flex-direction: column;
-    max-width: 400px;
+    width: min(640px, 95vw);
+    border-radius: var(--radius-lg);
   }
-
-  .login-section,
-  .character-section {
-    border-radius: 25px;
-    margin-bottom: 20px;
+  .register-left{
+    padding: 36px 28px;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    flex-basis: 100%;
   }
-
-  .character-section {
-    padding: 30px;
+  .register-right{
+    padding: 40px 28px 32px;
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
   }
-
-  .pig-image-container {
-    width: 150px;
-    height: 150px;
-  }
-
-  .pig-body {
-    width: 90px;
-    height: 105px;
-  }
-
-  .pig-head {
-    width: 75px;
-    height: 60px;
-    top: -22px;
-    left: 7px;
-  }
-
-  .pig-hat {
-    width: 60px;
-    height: 15px;
-    top: -11px;
-    left: 7px;
-  }
-
-  .pig-hat::after {
-    width: 11px;
-    height: 11px;
-    top: -8px;
-    left: 24px;
-  }
-
-  .pig-eyes {
-    top: 15px;
-    left: 11px;
-    width: 52px;
-    height: 30px;
-  }
-
-  .pig-eye {
-    width: 18px;
-    height: 18px;
-  }
-
-  .pig-eye::after {
-    width: 6px;
-    height: 6px;
-    top: 4px;
-    left: 4px;
-  }
-
-  .pig-glasses {
-    top: 11px;
-    left: 7px;
-    width: 60px;
-    height: 26px;
-  }
-
-  .pig-glasses::after {
-    top: 10px;
-    left: 26px;
-  }
-
-  .pig-snout {
-    width: 22px;
-    height: 18px;
-    bottom: 7px;
-    left: 26px;
-  }
-
-  .pig-snout::after,
-  .pig-snout::before {
-    width: 6px;
-    height: 4px;
-    top: 6px;
-  }
-
-  .pig-snout::after {
-    left: 4px;
-  }
-
-  .pig-snout::before {
-    right: 4px;
-  }
-
-  .pig-ear {
-    width: 15px;
-    height: 22px;
-    top: 7px;
-  }
-
-  .pig-ear::after {
-    width: 9px;
-    height: 13px;
-    top: 4px;
-    left: 3px;
-  }
-
-  .pig-arm {
-    width: 11px;
-    height: 30px;
-    top: 30px;
-  }
-
-  .pig-leg {
-    width: 11px;
-    height: 18px;
-    bottom: -15px;
-  }
-
-  .pig-leg::after {
-    width: 13px;
-    height: 6px;
-    bottom: -6px;
-    left: -1px;
-  }
-
-  .login-title {
-    font-size: 24px;
-  }
-
-  .login-subtitle {
-    font-size: 14px;
-  }
+  .login-title.strong{ font-size: 32px; }
+  .login-button{ width: 220px; }
 }
 
-@media (max-width: 480px) {
-  .auth-container .header {
-    padding: 10px 15px;
-  }
-
-  .auth-container .logo {
-    font-size: 18px;
-  }
-
-  .auth-container .logo-box {
-    padding: 3px 6px;
-    font-size: 16px;
-  }
-
-  .auth-container .coins-icon {
-    width: 35px;
-    height: 35px;
-    font-size: 16px;
-  }
-
-  .main-container {
-    padding: 20px 15px;
-  }
-
-  .login-section {
-    padding: 30px 25px;
-  }
-
-  .character-section {
-    padding: 20px;
-  }
-
-  .login-title {
-    font-size: 20px;
-  }
-
-  .login-subtitle {
-    font-size: 13px;
-  }
-
-  .form-input {
-    font-size: 14px;
-    padding: 10px 12px;
-  }
-
-  .login-button {
-    font-size: 14px;
-    padding: 12px;
-  }
-}
-
-/* Forzar header amarillo en todas las páginas de autenticación */
-.auth-container .header {
-  background: #f4d03f !important;
-  background-color: #f4d03f !important;
-  background-image: none !important;
-}
-
-/* Override específico para el header del layout principal */
-.auth-container .header {
-  background: #f4d03f !important;
-  background-color: #f4d03f !important;
-  background-image: none !important;
-  box-shadow: none !important;
-}
-
-/* Asegurar que no se herede ningún gradiente del header principal */
-.auth-container .header,
-.terms-container .terms-header {
-  background: #f4d03f !important;
-  background-color: #f4d03f !important;
-  background-image: none !important;
+@media (max-width: 520px){
+  .pig-image--mock{ width: 78%; max-width: 290px; }
+  .login-subtitle{ font-size: 14px; }
+  .form-input{ font-size: 18px; }
+  .login-button{ font-size: 14px; padding: 13px; }
 }

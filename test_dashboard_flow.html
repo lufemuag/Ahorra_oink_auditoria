@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Dashboard Flow</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 5px; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        .info { background-color: #d1ecf1; border-color: #bee5eb; }
+        button { padding: 10px 15px; margin: 5px; cursor: pointer; }
+        input { padding: 8px; margin: 5px; width: 200px; }
+    </style>
+</head>
+<body>
+    <h1>Test Dashboard Flow</h1>
+    
+    <div class="test-section info">
+        <h3>1. Simular Dashboard Público</h3>
+        <input type="number" id="dashboardAmount" placeholder="Ingresa un monto" value="120000">
+        <button onclick="simulateDashboard()">Simular Dashboard</button>
+        <div id="dashboardResult"></div>
+    </div>
+    
+    <div class="test-section info">
+        <h3>2. Simular Selección de Método</h3>
+        <select id="methodSelect">
+            <option value="50-30-20">Método 50:30:20</option>
+            <option value="sobres">Método de Sobres</option>
+            <option value="automatico">Ahorro Automático</option>
+            <option value="1dolar">Ahorro del $1</option>
+            <option value="redondeo">Método del Redondeo</option>
+        </select>
+        <button onclick="simulateMethodSelection()">Simular Selección</button>
+        <div id="methodResult"></div>
+    </div>
+    
+    <div class="test-section info">
+        <h3>3. Verificar Datos Guardados</h3>
+        <button onclick="checkStoredData()">Verificar Datos</button>
+        <div id="storedDataResult"></div>
+    </div>
+    
+    <div class="test-section info">
+        <h3>4. Simular Login</h3>
+        <button onclick="simulateLogin()">Simular Login</button>
+        <div id="loginResult"></div>
+    </div>
+    
+    <div class="test-section info">
+        <h3>5. Limpiar Datos</h3>
+        <button onclick="clearAllData()">Limpiar Todo</button>
+        <div id="clearResult"></div>
+    </div>
+
+    <script>
+        function simulateDashboard() {
+            const amount = document.getElementById('dashboardAmount').value;
+            if (!amount || amount <= 0) {
+                document.getElementById('dashboardResult').innerHTML = 
+                    '<div class="error">Ingresa un monto válido</div>';
+                return;
+            }
+            
+            // Simular guardado en localStorage
+            localStorage.setItem('userTotalAmount', amount);
+            localStorage.setItem('userAmountSet', 'true');
+            
+            document.getElementById('dashboardResult').innerHTML = 
+                `<div class="success">✅ Valor guardado: $${parseInt(amount).toLocaleString()}</div>`;
+        }
+        
+        function simulateMethodSelection() {
+            const method = document.getElementById('methodSelect').value;
+            const amount = localStorage.getItem('userTotalAmount') || '120000';
+            
+            // Simular guardado del método temporal
+            const tempData = {
+                method: method,
+                monthly_income: parseFloat(amount),
+                saved_at: new Date().toISOString()
+            };
+            
+            localStorage.setItem('ahorra_oink_temp_method', JSON.stringify(tempData));
+            localStorage.setItem('ahorra_oink_temp_method_date', new Date().toISOString());
+            sessionStorage.setItem('methodSelectedInSession', 'true');
+            
+            document.getElementById('methodResult').innerHTML = 
+                `<div class="success">✅ Método guardado: ${method}</div>`;
+        }
+        
+        function checkStoredData() {
+            const dashboardAmount = localStorage.getItem('userTotalAmount');
+            const amountSet = localStorage.getItem('userAmountSet');
+            const tempMethod = localStorage.getItem('ahorra_oink_temp_method');
+            const sessionFlag = sessionStorage.getItem('methodSelectedInSession');
+            
+            let html = '<div class="info"><h4>Datos en localStorage:</h4>';
+            html += `<p>Dashboard Amount: ${dashboardAmount || 'No encontrado'}</p>`;
+            html += `<p>Amount Set: ${amountSet || 'No encontrado'}</p>`;
+            html += `<p>Temp Method: ${tempMethod || 'No encontrado'}</p>`;
+            html += `<p>Session Flag: ${sessionFlag || 'No encontrado'}</p>`;
+            html += '</div>';
+            
+            document.getElementById('storedDataResult').innerHTML = html;
+        }
+        
+        function simulateLogin() {
+            // Simular usuario con token
+            const mockUser = {
+                id: 1,
+                username: 'testuser',
+                email: 'test@example.com',
+                token: 'mock_token_123'
+            };
+            
+            // Simular aplicación de datos guardados
+            const dashboardAmount = localStorage.getItem('userTotalAmount');
+            const amountSet = localStorage.getItem('userAmountSet');
+            const tempMethod = localStorage.getItem('ahorra_oink_temp_method');
+            
+            let html = '<div class="info"><h4>Simulando Login:</h4>';
+            
+            if (dashboardAmount && amountSet === 'true') {
+                html += `<div class="success">✅ Aplicando valor del dashboard: $${parseInt(dashboardAmount).toLocaleString()}</div>`;
+                // Simular limpieza
+                localStorage.removeItem('userTotalAmount');
+                localStorage.removeItem('userAmountSet');
+            } else {
+                html += '<div class="error">❌ No hay valor del dashboard para aplicar</div>';
+            }
+            
+            if (tempMethod) {
+                const methodData = JSON.parse(tempMethod);
+                html += `<div class="success">✅ Aplicando método: ${methodData.method}</div>`;
+                // Simular limpieza
+                localStorage.removeItem('ahorra_oink_temp_method');
+                localStorage.removeItem('ahorra_oink_temp_method_date');
+                sessionStorage.removeItem('methodSelectedInSession');
+            } else {
+                html += '<div class="error">❌ No hay método temporal para aplicar</div>';
+            }
+            
+            html += '</div>';
+            document.getElementById('loginResult').innerHTML = html;
+        }
+        
+        function clearAllData() {
+            localStorage.removeItem('userTotalAmount');
+            localStorage.removeItem('userAmountSet');
+            localStorage.removeItem('ahorra_oink_temp_method');
+            localStorage.removeItem('ahorra_oink_temp_method_date');
+            sessionStorage.removeItem('methodSelectedInSession');
+            
+            document.getElementById('clearResult').innerHTML = 
+                '<div class="success">✅ Todos los datos limpiados</div>';
+        }
+        
+        // Verificar datos al cargar la página
+        window.onload = function() {
+            checkStoredData();
+        };
+    </script>
+</body>
+</html>

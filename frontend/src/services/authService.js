@@ -1,269 +1,341 @@
-import { generateUniqueId } from '../utils/idGenerator';
+// src/services/authService.js
+import { encryptCredentials } from "../utils/encryption.js";
+import { temporaryMethodService } from "./temporaryMethodService.js";
+import { savingsMethodService } from "./savingsMethodService.js";
 
-const AUTH_KEY = 'ahorra_oink_auth';
-const USER_KEY = 'ahorra_oink_user';
-const USERS_KEY = 'ahorra_oink_users';
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000";
+const LS_AUTH = "ahorra_oink_auth";
+
+// === Helpers de sesión ===
+function getSession() {
+  const raw = localStorage.getItem(LS_AUTH);
+  try { return raw ? JSON.parse(raw) : null; } catch { return null; }
+}
+function setSession(next) {
+  localStorage.setItem(LS_AUTH, JSON.stringify(next));
+}
+function clearSession() {
+  localStorage.removeItem(LS_AUTH);
+}
+function getToken() {
+  return getSession()?.token || null;
+}
+function authHeaders(extra = {}) {
+  const token = getToken();
+  return token
+    ? { "Content-Type": "application/json", Authorization: `Bearer ${token}`, ...extra }
+    : { "Content-Type": "application/json", ...extra };
+}
 
 export const authService = {
-  // Inicializar usuario administrador por defecto
-  initializeDefaultAdmin: () => {
-    const users = getUsers();
-    
-    // Verificar si ya existe un usuario admin
-    const adminExists = users.find(u => u.username === 'admin');
-    
-    if (!adminExists) {
-      const defaultAdmin = {
-        id: 'admin-001',
-        username: 'admin',
-        password: 'abretecesamo',
-        firstName: 'Administrador',
-        lastName: 'Sistema',
-        role: 'admin',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        settings: {
-          notifications: true,
-          currency: 'USD',
-          theme: 'light'
-        },
-        achievements: [],
-        stats: {
-          totalSavings: 0,
-          totalIncome: 0,
-          totalExpenses: 0,
-          streak: 0
-        }
-      };
-      
-      users.push(defaultAdmin);
-      localStorage.setItem(USERS_KEY, JSON.stringify(users));
-      console.log('Usuario administrador por defecto creado');
-    }
+  initializeDefaultAdmin() {},
 
-    // Si no hay usuario autenticado, hacer login automático del admin
-    if (!authService.isAuthenticated()) {
-      console.log('No hay usuario autenticado, haciendo login automático del admin');
-      const loginResult = authService.login('admin', 'abretecesamo');
-      if (loginResult.success) {
-        console.log('Login automático del admin exitoso');
-      } else {
-        console.log('Error en login automático del admin:', loginResult.error);
-      }
-    }
+  isAuthenticated() {
+    return !!getSession()?.token;
   },
 
-  // Login
-  login: (username, password) => {
-    const users = getUsers();
-    const user = users.find(u => u.username === username && u.password === password);
+  async getCurrentUser() {
+    const token = getToken();
+    if (!token) return null;
     
-    if (user) {
-      const authData = {
-        isAuthenticated: true,
-        user: { ...user, password: undefined }, // No guardar password en auth
-        token: generateToken(),
-        loginTime: new Date().toISOString()
-      };
-      
-      localStorage.setItem(AUTH_KEY, JSON.stringify(authData));
-      return { success: true, user: authData.user };
-    }
-    
-    return { success: false, error: 'Usuario o contraseña incorrectos' };
-  },
-
-  // Register
-  register: async (userData) => {
-    const users = getUsers();
-    
-    // Verificar si el username ya existe
-    if (users.find(u => u.username === userData.username)) {
-      return { success: false, error: 'El nombre de usuario ya está registrado' };
-    }
-    
-    // Crear nuevo usuario
-    const newUser = {
-      id: generateUniqueId(),
-      username: userData.username,
-      password: userData.password,
-      firstName: userData.firstName,
-      lastName: userData.lastName,
-      role: 'user', // Rol por defecto para usuarios normales
-      createdAt: new Date().toISOString(),
-      settings: {
-        notifications: true,
-        currency: 'USD',
-        theme: 'light'
-      },
-      achievements: [],
-      stats: {
-        totalSavings: 0,
-        totalIncome: 0,
-        totalExpenses: 0,
-        streak: 0
-      }
-    };
-    
-    users.push(newUser);
-    localStorage.setItem(USERS_KEY, JSON.stringify(users));
-    
-    // Crear notificaciones automáticas para el nuevo usuario
     try {
-      const { notificationService } = await import('./notificationService');
-      notificationService.createAutomaticNotifications(newUser.id);
+      const res = await fetch(`${API_BASE}/api/auth/me/`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json().catch(() => null);
+      
+      if (!res.ok) {
+        // Si es 401, el token es inválido
+        if (res.status === 401) {
+          console.log('Token inválido, limpiando sesión');
+          clearSession();
+        }
+        return null;
+      }
+
+      const user = {
+        id: data.id,
+        nombre: data.nombrecompleto,
+        correo: data.correo,
+      };
+
+      const session = getSession() || {};
+      setSession({ ...session, user });
+      return user;
     } catch (error) {
-      console.log('Error creating automatic notifications:', error);
+      console.error('Error obteniendo usuario actual:', error);
+      return null;
     }
-    
-    // Auto login después del registro
-    return authService.login(userData.username, userData.password);
   },
 
-  // Logout
-  logout: () => {
-    localStorage.removeItem(AUTH_KEY);
+  logout() {
+    clearSession();
     return { success: true };
   },
 
-  // Verificar si está autenticado
-  isAuthenticated: () => {
-    const auth = getAuthData();
-    if (!auth || !auth.isAuthenticated) return false;
-    
-    // Verificar si el token no ha expirado (24 horas)
-    const loginTime = new Date(auth.loginTime);
-    const now = new Date();
-    const hoursDiff = (now - loginTime) / (1000 * 60 * 60);
-    
-    if (hoursDiff > 24) {
-      authService.logout();
-      return false;
+  async register(payload) {
+    try {
+      const res = await fetch(`${API_BASE}/api/register/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json().catch(() => null);
+
+      if (res.ok && data?.success) {
+        console.log('Registro exitoso, datos recibidos:', data);
+        
+        // Guardar la sesión con el token
+        const { token, refresh, user } = data;
+        if (token && user) {
+          setSession({ token, refresh, user });
+          console.log('Sesión guardada después del registro');
+        }
+        
+        // Aplicar valor guardado en localStorage si existe
+        console.log('Llamando applyStoredDashboardValue...');
+        await this.applyStoredDashboardValue(data.user);
+        
+        return { success: true, user: data.user };
+      }
+
+      // ⚠️ Propagamos errores por campo (para pintar debajo de inputs)
+      const fieldErrors = data?.errors;
+      const msg = fieldErrors
+        ? Object.values(fieldErrors).flat().join(" ")
+        : data?.detail || data?.error || `Error ${res.status}`;
+
+      return { success: false, error: msg, errors: fieldErrors };
+    } catch {
+      return { success: false, error: "No se pudo conectar con el servidor" };
     }
-    
-    return true;
   },
 
-  // Obtener usuario actual
-  getCurrentUser: () => {
-    const auth = getAuthData();
-    return auth?.user || null;
-  },
+  async login(username, password) {
+    try {
+      // Encriptar credenciales antes del envío
+      const encryptedCredentials = encryptCredentials(username, password);
+      
+      if (!encryptedCredentials) {
+        return { success: false, error: "Error al encriptar credenciales" };
+      }
+      
+      const res = await fetch(`${API_BASE}/api/auth/login/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(encryptedCredentials),
+      });
+      const data = await res.json().catch(() => null);
 
-  // Actualizar perfil de usuario
-  updateProfile: (userData) => {
-    const auth = getAuthData();
-    if (!auth || !auth.user) return { success: false, error: 'No hay usuario autenticado' };
-    
-    const users = getUsers();
-    const userIndex = users.findIndex(u => u.id === auth.user.id);
-    
-    if (userIndex === -1) return { success: false, error: 'Usuario no encontrado' };
-    
-    // Actualizar datos del usuario
-    const updatedUser = { 
-      ...users[userIndex], 
-      ...userData,
-      updatedAt: new Date().toISOString()
-    };
-    
-    users[userIndex] = updatedUser;
-    localStorage.setItem(USERS_KEY, JSON.stringify(users));
-    
-    // Actualizar auth
-    const updatedAuth = {
-      ...auth,
-      user: { ...updatedUser, password: undefined }
-    };
-    localStorage.setItem(AUTH_KEY, JSON.stringify(updatedAuth));
-    
-    return { success: true, user: updatedAuth.user };
-  },
+      if (!res.ok || !data?.success) {
+        const msg = data?.errors
+          ? Object.values(data.errors).flat().join(" ")
+          : data?.detail || data?.error || "Credenciales inválidas";
+        return { success: false, error: msg };
+      }
 
-  // Cambiar contraseña
-  changePassword: (currentPassword, newPassword) => {
-    const auth = getAuthData();
-    if (!auth || !auth.user) return { success: false, error: 'No hay usuario autenticado' };
-    
-    const users = getUsers();
-    const user = users.find(u => u.id === auth.user.id);
-    
-    if (!user || user.password !== currentPassword) {
-      return { success: false, error: 'Contraseña actual incorrecta' };
+      const { token, refresh, user } = data;
+      if (!token || !user) return { success: false, error: "Respuesta inválida del servidor" };
+
+      setSession({ token, refresh, user });
+      
+      // Aplicar valor del dashboard y metodología temporal si existen
+      await this.applyStoredDashboardValue(user);
+      
+      return { success: true, user };
+    } catch {
+      return { success: false, error: "No se pudo conectar con el servidor" };
     }
-    
-    // Actualizar contraseña
-    user.password = newPassword;
-    user.updatedAt = new Date().toISOString();
-    
-    const userIndex = users.findIndex(u => u.id === auth.user.id);
-    users[userIndex] = user;
-    localStorage.setItem(USERS_KEY, JSON.stringify(users));
-    
+  },
+
+  async updateMe(payload) {
+    const res = await fetch(`${API_BASE}/api/auth/me/detail/`, {
+      method: "PUT",
+      headers: authHeaders(),
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json().catch(() => null);
+
+    if (!res.ok || !data?.success) {
+      const msg = data?.errors
+        ? Object.values(data.errors).flat().join(" ")
+        : data?.detail || "No se pudo actualizar el perfil";
+      return { success: false, error: msg };
+    }
+
+    const session = getSession() || {};
+    setSession({ ...session, user: data.user });
+    return { success: true, user: data.user };
+  },
+
+  async deleteMe() {
+    const token = getToken();
+    if (!token) return { success: false, error: "No autenticado" };
+
+    const res = await fetch(`${API_BASE}/api/auth/me/detail/`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await res.json().catch(() => null);
+
+    if (!res.ok || !data?.success) {
+      const msg = data?.detail || "No se pudo eliminar la cuenta";
+      return { success: false, error: msg };
+    }
+
+    clearSession();
     return { success: true };
   },
 
-  // Recuperar contraseña (simulación)
-  forgotPassword: (username) => {
-    const users = getUsers();
-    const user = users.find(u => u.username === username);
-    
-    if (!user) {
-      return { success: false, error: 'Usuario no encontrado' };
+  async changePassword(current_password, new_password) {
+    const res = await fetch(`${API_BASE}/api/auth/me/change-password/`, {
+      method: "POST",
+      headers: authHeaders(),
+      body: JSON.stringify({ current_password, new_password }),
+    });
+    const data = await res.json().catch(() => null);
+
+    if (!res.ok || !data?.success) {
+      const msg = data?.errors
+        ? (typeof data.errors === "string" ? data.errors : Object.entries(data.errors).map(([k,v]) => Array.isArray(v)? v.join(" "): String(v)).join(" "))
+        : data?.detail || "No se pudo cambiar la contraseña";
+      return { success: false, error: msg };
     }
-    
-    // En una app real, aquí se enviaría un email de recuperación
-    // Por ahora solo simulamos que se envió
-    return { 
-      success: true, 
-      message: 'Se ha enviado información de recuperación (funcionalidad simulada)' 
-    };
+
+    return { success: true };
   },
 
-  // Verificar si el usuario actual es administrador
-  isAdmin: () => {
-    const auth = getAuthData();
-    return auth?.user?.role === 'admin';
+  async deleteAccount(password, reason = '') {
+    const res = await fetch(`${API_BASE}/api/auth/me/delete-account/`, {
+      method: "POST",
+      headers: authHeaders(),
+      body: JSON.stringify({ password, reason }),
+    });
+    const data = await res.json().catch(() => null);
+
+    if (!res.ok || !data?.success) {
+      const msg = data?.error || data?.detail || "No se pudo eliminar la cuenta";
+      return { success: false, error: msg };
+    }
+
+    clearSession();
+    return { success: true, message: data.message };
   },
 
-  // Obtener todos los usuarios (solo para administradores)
-  getAllUsers: () => {
-    if (!authService.isAdmin()) {
-      return { success: false, error: 'Acceso denegado. Solo administradores.' };
+  // Aplicar metodología temporal al usuario autenticado
+  async applyTemporaryMethod() {
+    try {
+      // Verificar si hay método temporal válido
+      if (!temporaryMethodService.hasValidTemporaryMethod()) {
+        console.log('No hay método temporal válido para aplicar');
+        return;
+      }
+
+      // Obtener método temporal
+      const tempResult = temporaryMethodService.getTemporaryMethod();
+      if (!tempResult.success || !tempResult.data) {
+        console.log('No se pudo obtener método temporal');
+        return;
+      }
+
+      const { method, monthly_income } = tempResult.data;
+      
+      // Aplicar método al usuario autenticado
+      const result = await savingsMethodService.updateMethod(method, monthly_income);
+      
+      if (result.success) {
+        console.log('Método temporal aplicado correctamente:', result.data);
+        // Limpiar método temporal después de aplicarlo
+        temporaryMethodService.clearTemporaryMethod();
+        
+        // Actualizar el balance en el contexto de dinero
+        if (window.refreshMoneyContext) {
+          window.refreshMoneyContext();
+        }
+      } else {
+        console.error('Error aplicando método temporal:', result.error);
+      }
+    } catch (error) {
+      console.error('Error en applyTemporaryMethod:', error);
     }
-    
-    const users = getUsers();
-    // Remover passwords de la respuesta
-    const safeUsers = users.map(user => ({
-      ...user,
-      password: undefined
-    }));
-    
-    return { success: true, users: safeUsers };
-  }
+  },
+
+  async applyStoredDashboardValue(user) {
+    try {
+      console.log('=== APLICANDO VALOR DEL DASHBOARD ===');
+      console.log('Usuario recibido:', user);
+      
+      // Verificar si hay un valor guardado en localStorage del dashboard público
+      const storedAmount = localStorage.getItem('userTotalAmount');
+      const amountSet = localStorage.getItem('userAmountSet');
+      
+      console.log('Valores en localStorage:', {
+        storedAmount,
+        amountSet,
+        allLocalStorage: Object.keys(localStorage).reduce((acc, key) => {
+          acc[key] = localStorage.getItem(key);
+          return acc;
+        }, {})
+      });
+      
+      if (storedAmount && amountSet === 'true') {
+        console.log('Aplicando valor del dashboard público:', storedAmount);
+        
+        // Aplicar el valor como balance inicial
+        const amount = parseFloat(storedAmount);
+        if (amount > 0) {
+          console.log('Enviando request a set-initial-balance con:', {
+            url: `${API_BASE}/api/auth/me/set-initial-balance/`,
+            amount,
+            token: user.token
+          });
+          
+          const response = await fetch(`${API_BASE}/api/auth/me/set-initial-balance/`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${user.token}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ amount })
+          });
+          
+          console.log('Respuesta del servidor:', response.status, response.statusText);
+          
+          if (response.ok) {
+            const responseData = await response.json();
+            console.log('Valor del dashboard aplicado correctamente:', responseData);
+            // Limpiar el valor guardado
+            localStorage.removeItem('userTotalAmount');
+            localStorage.removeItem('userAmountSet');
+            console.log('Valores limpiados del localStorage');
+            
+            // Actualizar el balance en el contexto de dinero
+            if (window.refreshMoneyContext) {
+              window.refreshMoneyContext();
+            }
+          } else {
+            const errorData = await response.json();
+            console.error('Error aplicando valor del dashboard:', response.statusText, errorData);
+          }
+        } else {
+          console.log('Monto inválido:', amount);
+        }
+      } else {
+        console.log('No hay valor del dashboard para aplicar');
+      }
+      
+      // También aplicar método temporal si existe
+      console.log('Aplicando método temporal...');
+      await this.applyTemporaryMethod();
+      
+    } catch (error) {
+      console.error('Error en applyStoredDashboardValue:', error);
+    }
+  },
+
+  // Aliases y stubs
+  updateProfile(userData) { return this.updateMe(userData); },
+  forgotPassword() { return { success: true }; },
+  isAdmin() { return false; },
+  getAllUsers() { return { success: true, users: [] }; },
 };
-
-// Funciones auxiliares
-function getAuthData() {
-  try {
-    const auth = localStorage.getItem(AUTH_KEY);
-    return auth ? JSON.parse(auth) : null;
-  } catch (error) {
-    console.error('Error parsing auth data:', error);
-    return null;
-  }
-}
-
-function getUsers() {
-  try {
-    const users = localStorage.getItem(USERS_KEY);
-    return users ? JSON.parse(users) : [];
-  } catch (error) {
-    console.error('Error parsing users data:', error);
-    return [];
-  }
-}
-
-function generateToken() {
-  return Math.random().toString(36).substring(2) + Date.now().toString(36);
-}

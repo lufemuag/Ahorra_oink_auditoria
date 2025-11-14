@@ -1,197 +1,248 @@
-.dashboard-landing {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0;
-  padding: 2rem;
-  min-height: calc(100vh - 70px); /* Restar altura del header */
+
+:root{
+  --green-dk: #0b3c2f;
+  --green:    #2f6e4f;
+  --green-md: #3c7e57;
+  --green-li: #6ea77f;
+  --yellow:   #f4d03f;
+  --paper:    #f6ed9e;
+  --ink:      #1e1e1e;
+  --amber:    #FFB823;
+
+
+  --green-30: color-mix(in srgb, var(--green) 30%, transparent);
+  --green-40: color-mix(in srgb, var(--green) 40%, transparent);
+  --green-60: color-mix(in srgb, var(--green) 60%, transparent);
+  --yellow-55shadow: color-mix(in srgb, var(--yellow) 55%, black 45%);
 }
 
-/* Main Content */
-.landing-main {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+
+.dashboard{
+  min-height: calc(100vh - 70px);
+  background:
+    radial-gradient(900px 520px at 20% 25%, var(--green) 0%, color-mix(in srgb, var(--green) 0%, transparent 100%) 60%),
+    radial-gradient(900px 520px at 80% 70%, var(--green-dk) 0%, color-mix(in srgb, var(--green-dk) 0%, transparent 100%) 60%),
+    var(--green-dk);
+  display:flex;
+  flex-direction:column;
 }
 
-.main-panel {
-  background: #2d5016;
-  border-radius: 20px;
-  padding: 3rem;
-  max-width: 900px;
-  width: 100%;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+.stage{
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:56px 24px; /* 40 -> 56 */
 }
 
-.panel-content {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 3rem;
-  align-items: center;
+/* ==============================
+   Hero
+=================================*/
+.hero{
+  position:relative;
+  width:min(1280px,100%);
+  min-height:640px; /* 560 -> 640 */
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow: visible;
 }
 
-/* Pig Image Section */
-.pig-image-section {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-}
-
-.pig-image {
-  max-width: 100%;
-  height: auto;
-  max-height: 400px;
-  object-fit: contain;
-  animation: float 3s ease-in-out infinite;
-  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3));
-}
-
-/* Animation */
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-}
-
-/* Content Section */
-.content-section {
-  color: white;
-  text-align: left;
-}
-
-.welcome-text h1 {
-  font-size: 2.5rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-  line-height: 1.2;
-}
-
-.welcome-text h2 {
-  font-size: 2.5rem;
-  font-weight: 700;
-  margin-bottom: 2rem;
-  line-height: 1.2;
-}
-
-/* Salary Form */
-.salary-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.salary-input-container {
-  position: relative;
-  background: #ffecb3;
-  border-radius: 15px;
-  padding: 1rem 1.5rem;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  border: 2px solid transparent;
-  transition: all 0.3s ease;
-}
-
-.salary-input-container:focus-within {
-  border-color: #4caf50;
-  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
-}
-
-.dollar-icon {
-  color: #4caf50;
-  font-size: 1.5rem;
-}
-
-.salary-input {
-  flex: 1;
-  border: none;
+/* ==============================
+   Panel verde (fondo en ::before)
+   - El fondo (gradiente/forma) va en ::before (z:0)
+   - El contenido del panel va en z:2
+   - El cerdito irá en z:1 => queda entre fondo y texto
+=================================*/
+.panel{
+  position:relative;
+  padding:68px clamp(34px,6vw,60px) 50px clamp(220px, 22vw, 360px);
+  border-radius:40px;
+  color:var(--paper);
+  z-index:0;
+  text-align:center;
   background: transparent;
-  font-size: 1.2rem;
-  color: #333;
-  outline: none;
+}
+.panel::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  background:linear-gradient(180deg, color-mix(in srgb, var(--green-md) 96%, transparent) 0%, color-mix(in srgb, var(--green) 96%, transparent) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.08),
+    0 28px 64px rgba(0,0,0,.48);
+  backdrop-filter: blur(1px);
+  z-index:0;
+}
+.panel > *{
+  position:relative;
+  z-index:2;
 }
 
-.salary-input::placeholder {
-  color: #666;
+.title{
+  margin:0 0 34px 0;
+  font-size:4rem;
+  line-height:1.25;
+  font-weight:900;
+  color:var(--paper);
+  text-shadow:0 2px 0 rgba(0,0,0,.14);
+  max-width:30ch;
+  margin-left:auto;
+  margin-right:auto;
 }
 
-.start-saving-btn {
-  background: #ff9800;
-  color: white;
-  border: none;
-  border-radius: 15px;
-  padding: 1rem 2rem;
-  font-size: 1.3rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+/* ==============================
+   Cerdito (flota sobre el panel pero debajo del texto)
+=================================*/
+.pig-wrap{
+  position:absolute;
+  left:-140px;
+  bottom:-28px;
+  z-index:1;
+  pointer-events:none;
+  user-select:none;
+}
+.pig{
+  max-width:640px;
+  width:58vw;
+  height:auto;
+  filter:
+    drop-shadow(0 26px 36px rgba(0,0,0,.45))
+    drop-shadow(0 2px 0 rgba(0,0,0,.08));
+  animation: pigFloat 3s ease-in-out infinite;
+}
+.pig--flipped{ transform: scaleX(-1); }
+@keyframes pigFloat{
+  0%,100%{ transform: translateY(0) scaleX(-1); }
+  50%{ transform: translateY(-12px) scaleX(-1); }
 }
 
-.start-saving-btn:hover {
-  background: #f57c00;
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(255, 152, 0, 0.3);
+/* ==============================
+   Formulario
+=================================*/
+.form{
+  display:flex;
+  flex-direction:column;
+  gap:26px;         /* 22 -> 26 */
+  align-items:center;
 }
 
-.start-saving-btn:active {
-  transform: translateY(0);
+/* Input */
+.input{
+  display:flex;
+  align-items:center;
+  gap:1.1rem;
+  background:var(--paper);
+  border-radius:999px;
+  padding:26px 28px;
+  border:2px solid color-mix(in srgb, var(--green) 35%, transparent);
+  box-shadow:
+    inset 0 -2px 0 rgba(0,0,0,.06),
+    0 1px 0 rgba(255,255,255,.25);
+  transition:border-color .2s, box-shadow .2s;
+  min-width:520px;
+  max-width:560px;
+}
+.input:focus-within{
+  border-color: color-mix(in srgb, var(--yellow) 60%, transparent);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--yellow) 25%, transparent),
+    inset 0 -2px 0 rgba(0,0,0,.06);
+}
+.input__icon-wrap{
+  width:48px; height:48px;
+  border-radius:999px;
+  background: color-mix(in srgb, var(--green-li) 18%, transparent);
+  display:grid; place-items:center;
+}
+.input__icon{ color:var(--green-md); font-size:1.5rem; }
+.input input{
+  flex:1;
+  border:none;
+  outline:none;
+  background:transparent;
+  font-size:1.6rem;
+  color:var(--ink);
+  font-weight:800;
+}
+.input input::placeholder{
+  color:#6f6a63;
+  font-weight:800;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-  .panel-content {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-    text-align: center;
+/* ==============================
+   Botón CTA
+=================================*/
+.cta{
+  background:linear-gradient(180deg, var(--amber) 0%, #f59e0b 100%);
+  color:#fff;
+  border:none;
+  border-radius:999px;
+  padding:26px 34px; /* 20 28 -> 26 34 */
+  font-size:1.7rem;  /* 1.4 -> 1.7 */
+  font-weight:900;
+  cursor:pointer;
+  box-shadow:0 16px 30px rgba(255,184,35,.5); /* más intenso */
+  transition: transform .08s, box-shadow .2s;
+  min-width:400px;   /* 340 -> 400 */
+}
+.cta:hover{
+  transform:translateY(-2px);
+  box-shadow:0 18px 34px rgba(255,184,35,.55);
+}
+.cta:active{ transform:translateY(0); }
+
+
+
+/* ==============================
+   Hint
+=================================*/
+.hint{
+  margin-top:14px;
+  font-size:1.1rem;
+  font-weight:800;
+  text-align:center;
+}
+.register-link{
+  color:rgba(255,255,255,.95);
+  text-decoration:underline;
+  font-weight:800;
+  transition:color .2s;
+  font-size:1.05rem;
+}
+.register-link:hover{ color:var(--yellow); }
+
+/* ==============================
+   Responsive
+=================================*/
+@media (max-width:1024px){
+  .hero{ flex-direction:column; min-height:auto; }
+  .pig-wrap{ position:relative; left:0; bottom:0; margin-bottom:16px; z-index:1; }
+  .pig{ width:78vw; max-width:520px; }
+  .panel{
+    margin:0;
+    padding:52px 34px;                        /* sin reserva extra en tablet */
   }
-  
-  .pig-image {
-    max-height: 300px;
-  }
-  
-  .welcome-text h1,
-  .welcome-text h2 {
-    font-size: 2rem;
-  }
-  
-  .main-panel {
-    padding: 2rem;
-  }
-  
-  .landing-header {
-    padding: 1rem;
-  }
-  
-  .logo-text {
-    font-size: 1.2rem;
+  .title{
+    max-width:100%;
+    font-size:2.6rem;
   }
 }
+@media (max-width:520px){
+  .panel{ padding:34px 26px; border-radius:28px; }
+  .title{ font-size:2.3rem; }
+  .cta{ font-size:1.35rem; padding:20px 24px; min-width:0; width:100%; }
+  .input{ min-width:0; width:100%; padding:22px 24px; }
+  .input input{ font-size:1.35rem; }
+  .input__icon-wrap{ width:44px; height:44px; }
+  .input__icon{ font-size:1.35rem; }
+}
 
-@media (max-width: 480px) {
-  .welcome-text h1,
-  .welcome-text h2 {
-    font-size: 1.5rem;
-  }
-  
-  .pig-image {
-    max-height: 250px;
-  }
-  
-  .main-panel {
-    padding: 1.5rem;
-  }
-  
-  .salary-input-container {
-    padding: 0.8rem 1rem;
-  }
-  
-  .start-saving-btn {
-    padding: 0.8rem 1.5rem;
-    font-size: 1.1rem;
-  }
+/* ==============================
+   Ajuste fino (desktop ancho)
+   - Reserva lateral del panel según viewport
+=================================*/
+@media (min-width:1280px){
+  .panel{ padding-left: clamp(260px, 24vw, 400px); }
 }

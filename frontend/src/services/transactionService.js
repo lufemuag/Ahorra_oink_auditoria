@@ -1,214 +1,215 @@
-import { generateUniqueId } from '../utils/idGenerator';
+// src/services/transactionService.js
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
-const TRANSACTIONS_KEY = 'ahorra_oink_transactions';
+// Helper para obtener headers de autenticación
+function getAuthHeaders() {
+  const token = localStorage.getItem('ahorra_oink_auth');
+  if (token) {
+    const session = JSON.parse(token);
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${session.token}`
+    };
+  }
+  return { 'Content-Type': 'application/json' };
+}
 
 export const transactionService = {
-  // Crear nueva transacción
-  create: (transactionData) => {
+  // Obtener todas las transacciones del usuario
+  async getTransactions() {
     try {
-      const transactions = getTransactions();
-      const newTransaction = {
-        id: generateUniqueId(),
-        userId: transactionData.userId,
-        type: transactionData.type, // 'income' o 'expense'
-        amount: parseFloat(transactionData.amount),
-        category: transactionData.category,
-        description: transactionData.description,
-        date: transactionData.date || new Date().toISOString(),
-        createdAt: new Date().toISOString(),
-        tags: transactionData.tags || []
-      };
+      console.log('Obteniendo transacciones desde:', `${API_BASE}/api/transactions/`);
+      console.log('Headers de autenticación:', getAuthHeaders());
       
-      transactions.push(newTransaction);
-      localStorage.setItem(TRANSACTIONS_KEY, JSON.stringify(transactions));
-      
-      // Actualizar estadísticas del usuario
-      updateUserStats(transactionData.userId, newTransaction);
-      
-      // Verificar logros automáticamente
-      try {
-        const { achievementService } = require('./achievementService');
-        achievementService.checkSpecificAchievements(
-          transactionData.userId, 
-          'transaction', 
-          { type: newTransaction.type, amount: newTransaction.amount }
-        );
-      } catch (error) {
-        console.log('Error checking achievements:', error);
-      }
-      
-      return { success: true, transaction: newTransaction };
-    } catch (error) {
-      console.error('Error creating transaction:', error);
-      return { success: false, error: 'Error al crear la transacción' };
-    }
-  },
-
-  // Obtener transacciones del usuario
-  getByUser: (userId) => {
-    try {
-      const transactions = getTransactions();
-      return transactions.filter(t => t.userId === userId);
-    } catch (error) {
-      console.error('Error getting transactions:', error);
-      return [];
-    }
-  },
-
-  // Obtener transacciones por tipo
-  getByType: (userId, type) => {
-    try {
-      const transactions = getTransactions();
-      return transactions.filter(t => t.userId === userId && t.type === type);
-    } catch (error) {
-      console.error('Error getting transactions by type:', error);
-      return [];
-    }
-  },
-
-  // Obtener estadísticas del usuario
-  getUserStats: (userId) => {
-    try {
-      const transactions = getTransactions();
-      const userTransactions = transactions.filter(t => t.userId === userId);
-      
-      const stats = {
-        totalIncome: 0,
-        totalExpenses: 0,
-        totalSavings: 0,
-        transactionCount: userTransactions.length
-      };
-      
-      userTransactions.forEach(transaction => {
-        if (transaction.type === 'income') {
-          stats.totalIncome += transaction.amount;
-        } else if (transaction.type === 'expense') {
-          stats.totalExpenses += transaction.amount;
-        }
+      const response = await fetch(`${API_BASE}/api/transactions/`, {
+        headers: getAuthHeaders()
       });
       
-      stats.totalSavings = stats.totalIncome - stats.totalExpenses;
+      console.log('Respuesta del servidor:', response.status, response.statusText);
       
-      return stats;
+      if (!response.ok) {
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      console.log('Datos recibidos del servidor:', data);
+      
+      return { success: true, transactions: data.transactions || [] };
     } catch (error) {
-      console.error('Error getting user stats:', error);
-      return {
-        totalIncome: 0,
-        totalExpenses: 0,
-        totalSavings: 0,
-        transactionCount: 0
-      };
+      console.error('Error obteniendo transacciones:', error);
+      return { success: false, error: error.message };
+    }
+  },
+
+  // Crear nueva transacción
+  async createTransaction(transactionData) {
+    try {
+      console.log('Creando transacción con datos:', transactionData);
+      
+      // Validar datos antes de enviar
+      if (!transactionData.amount || transactionData.amount <= 0) {
+        return { success: false, error: 'El monto debe ser mayor a 0' };
+      }
+      
+      if (transactionData.amount > 1000000000) {
+        return { success: false, error: 'El monto no puede exceder 1 billón' };
+      }
+
+      console.log('Enviando transacción al servidor:', {
+        url: `${API_BASE}/api/transactions/`,
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(transactionData)
+      });
+
+      const response = await fetch(`${API_BASE}/api/transactions/`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(transactionData)
+      });
+      
+      console.log('Respuesta del servidor:', response.status, response.statusText);
+      
+      const data = await response.json();
+      console.log('Datos de respuesta:', data);
+      
+      if (!response.ok) {
+        // Manejar diferentes tipos de errores del servidor
+        if (data.errors) {
+          return { 
+            success: false, 
+            error: data.errors 
+          };
+        } else if (data.detail) {
+          return { 
+            success: false, 
+            error: data.detail 
+          };
+        } else {
+          return { 
+            success: false, 
+            error: `Error del servidor: ${response.status}` 
+          };
+        }
+      }
+      
+      console.log('Transacción creada exitosamente:', data.transaction);
+      return { success: true, transaction: data.transaction };
+    } catch (error) {
+      console.error('Error creando transacción:', error);
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        return { success: false, error: 'Error de conexión. Verifica tu conexión a internet.' };
+      }
+      return { success: false, error: error.message };
+    }
+  },
+
+  // Actualizar transacción
+  async updateTransaction(id, transactionData) {
+    try {
+      // Validar datos antes de enviar
+      if (!transactionData.amount || transactionData.amount <= 0) {
+        return { success: false, error: 'El monto debe ser mayor a 0' };
+      }
+      
+      if (transactionData.amount > 1000000000) {
+        return { success: false, error: 'El monto no puede exceder 1 billón' };
+      }
+
+      const response = await fetch(`${API_BASE}/api/transactions/${id}/`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(transactionData)
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        // Manejar diferentes tipos de errores del servidor
+        if (data.errors) {
+          return { 
+            success: false, 
+            error: data.errors 
+          };
+        } else if (data.detail) {
+          return { 
+            success: false, 
+            error: data.detail 
+          };
+        } else {
+          return { 
+            success: false, 
+            error: `Error del servidor: ${response.status}` 
+          };
+        }
+      }
+      
+      return { success: true, transaction: data.transaction };
+    } catch (error) {
+      console.error('Error actualizando transacción:', error);
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        return { success: false, error: 'Error de conexión. Verifica tu conexión a internet.' };
+      }
+      return { success: false, error: error.message };
     }
   },
 
   // Eliminar transacción
-  delete: (transactionId) => {
+  async deleteTransaction(id) {
     try {
-      const transactions = getTransactions();
-      const transactionIndex = transactions.findIndex(t => t.id === transactionId);
+      const response = await fetch(`${API_BASE}/api/transactions/${id}/`, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+      });
       
-      if (transactionIndex === -1) {
-        return { success: false, error: 'Transacción no encontrada' };
+      if (!response.ok) {
+        const data = await response.json();
+        return { 
+          success: false, 
+          error: data.detail || `Error ${response.status}` 
+        };
       }
-      
-      const deletedTransaction = transactions[transactionIndex];
-      transactions.splice(transactionIndex, 1);
-      localStorage.setItem(TRANSACTIONS_KEY, JSON.stringify(transactions));
-      
-      // Actualizar estadísticas del usuario (revertir)
-      revertUserStats(deletedTransaction.userId, deletedTransaction);
       
       return { success: true };
     } catch (error) {
-      console.error('Error deleting transaction:', error);
-      return { success: false, error: 'Error al eliminar la transacción' };
+      console.error('Error eliminando transacción:', error);
+      return { success: false, error: error.message };
     }
   },
 
-  // Obtener categorías disponibles
-  getCategories: (type) => {
-    const incomeCategories = [
-      'Salario',
-      'Freelance',
-      'Inversiones',
-      'Ventas',
-      'Bonificaciones',
-      'Otros ingresos'
-    ];
-    
-    const expenseCategories = [
-      'Alimentación',
-      'Transporte',
-      'Vivienda',
-      'Entretenimiento',
-      'Salud',
-      'Educación',
-      'Ropa',
-      'Servicios',
-      'Otros gastos'
-    ];
-    
-    return type === 'income' ? incomeCategories : expenseCategories;
+  // Obtener categorías
+  async getCategories() {
+    try {
+      const response = await fetch(`${API_BASE}/api/categories/`);
+      
+      if (!response.ok) {
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      return { success: true, categories: data.categories || [] };
+    } catch (error) {
+      console.error('Error obteniendo categorías:', error);
+      return { success: false, error: error.message };
+    }
+  },
+
+  // Obtener estadísticas
+  async getStatistics() {
+    try {
+      const response = await fetch(`${API_BASE}/api/statistics/`, {
+        headers: getAuthHeaders()
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      return { success: true, statistics: data.statistics };
+    } catch (error) {
+      console.error('Error obteniendo estadísticas:', error);
+      return { success: false, error: error.message };
+    }
   }
 };
-
-// Funciones auxiliares
-function getTransactions() {
-  try {
-    const transactions = localStorage.getItem(TRANSACTIONS_KEY);
-    return transactions ? JSON.parse(transactions) : [];
-  } catch (error) {
-    console.error('Error parsing transactions data:', error);
-    return [];
-  }
-}
-
-function updateUserStats(userId, transaction) {
-  try {
-    const users = JSON.parse(localStorage.getItem('ahorra_oink_users') || '[]');
-    const userIndex = users.findIndex(u => u.id === userId);
-    
-    if (userIndex !== -1) {
-      const user = users[userIndex];
-      
-      if (transaction.type === 'income') {
-        user.stats.totalIncome += transaction.amount;
-      } else if (transaction.type === 'expense') {
-        user.stats.totalExpenses += transaction.amount;
-      }
-      
-      user.stats.totalSavings = user.stats.totalIncome - user.stats.totalExpenses;
-      user.updatedAt = new Date().toISOString();
-      
-      users[userIndex] = user;
-      localStorage.setItem('ahorra_oink_users', JSON.stringify(users));
-    }
-  } catch (error) {
-    console.error('Error updating user stats:', error);
-  }
-}
-
-function revertUserStats(userId, transaction) {
-  try {
-    const users = JSON.parse(localStorage.getItem('ahorra_oink_users') || '[]');
-    const userIndex = users.findIndex(u => u.id === userId);
-    
-    if (userIndex !== -1) {
-      const user = users[userIndex];
-      
-      if (transaction.type === 'income') {
-        user.stats.totalIncome -= transaction.amount;
-      } else if (transaction.type === 'expense') {
-        user.stats.totalExpenses -= transaction.amount;
-      }
-      
-      user.stats.totalSavings = user.stats.totalIncome - user.stats.totalExpenses;
-      user.updatedAt = new Date().toISOString();
-      
-      users[userIndex] = user;
-      localStorage.setItem('ahorra_oink_users', JSON.stringify(users));
-    }
-  } catch (error) {
-    console.error('Error reverting user stats:', error);
-  }
-}

@@ -1,0 +1,66 @@
+/* ===========================
+   Header2.css (match Header.css)
+   =========================== */
+
+.header2 {
+  background: #f4d03f;           /* igual al Header */
+  box-shadow: var(--shadow-md);   /* igual */
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+/* Contenedor alineado a 1280px y 117px alto */
+.header2-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-xl);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 117px; /* igual al Header */
+}
+
+/* Logo (mismas medidas que Header .logo-img) */
+.header2-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  text-decoration: none;
+  color: white;
+  font-weight: 800;
+  font-size: 2.1rem;
+  transition: all var(--transition-fast);
+}
+.header2-logo:hover { transform: scale(1.05); }
+
+.header2-logo .logo-img {
+  height: 73px;   /* igual que Header .logo-img */
+  width: auto;
+  display: block;
+}
+
+/* (Opcional) Área derecha para acciones o info ligera */
+.header2-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+.header2-link {
+  color: var(--dark-green);
+  background: rgba(255,255,255,0.12);
+  padding: 12px 18px;
+  border-radius: 16px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all var(--transition-fast);
+}
+.header2-link:hover {
+  background: rgba(255,255,255,0.2);
+  transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header2-container { padding: 0 var(--spacing-md); height: 117px; }
+}

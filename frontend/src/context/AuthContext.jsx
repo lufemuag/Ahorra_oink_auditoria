@@ -1,63 +1,25 @@
+// src/context/AuthContext.jsx
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import { authService } from '../services/authService';
 
 const AuthContext = createContext();
 
-// Estados de autenticación
 const authReducer = (state, action) => {
   switch (action.type) {
     case 'LOGIN_START':
-      return {
-        ...state,
-        loading: true,
-        error: null
-      };
-    
+      return { ...state, loading: true, error: null };
     case 'LOGIN_SUCCESS':
-      return {
-        ...state,
-        loading: false,
-        isAuthenticated: true,
-        user: action.payload,
-        error: null
-      };
-    
+      return { ...state, loading: false, isAuthenticated: true, user: action.payload, error: null };
     case 'LOGIN_ERROR':
-      return {
-        ...state,
-        loading: false,
-        isAuthenticated: false,
-        user: null,
-        error: action.payload
-      };
-    
+      return { ...state, loading: false, isAuthenticated: false, user: null, error: action.payload };
     case 'LOGOUT':
-      return {
-        ...state,
-        loading: false,
-        isAuthenticated: false,
-        user: null,
-        error: null
-      };
-    
+      return { ...state, loading: false, isAuthenticated: false, user: null, error: null };
     case 'UPDATE_USER':
-      return {
-        ...state,
-        user: action.payload
-      };
-    
+      return { ...state, user: action.payload };
     case 'SET_LOADING':
-      return {
-        ...state,
-        loading: action.payload
-      };
-    
+      return { ...state, loading: action.payload };
     case 'CLEAR_ERROR':
-      return {
-        ...state,
-        error: null
-      };
-    
+      return { ...state, error: null };
     default:
       return state;
   }
@@ -65,168 +27,181 @@ const authReducer = (state, action) => {
 
 const initialState = {
   isAuthenticated: false,
-  user: null,
+  user: null,   // { id, nombre, correo }
   loading: true,
-  error: null
+  error: null,
 };
 
 export const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
-  // Verificar autenticación al cargar la app
   useEffect(() => {
-    const checkAuth = () => {
-      // Inicializar usuario administrador por defecto
-      authService.initializeDefaultAdmin();
-      
-      if (authService.isAuthenticated()) {
-        const user = authService.getCurrentUser();
-        dispatch({ type: 'LOGIN_SUCCESS', payload: user });
-      } else {
-        dispatch({ type: 'SET_LOADING', payload: false });
+    let isMounted = true;
+    
+    const checkAuth = async () => {
+      try {
+        authService.initializeDefaultAdmin?.();
+        const hasToken = authService.isAuthenticated();
+        
+        if (hasToken) {
+          const user = await authService.getCurrentUser();
+          if (isMounted && user) {
+            dispatch({ type: 'LOGIN_SUCCESS', payload: user });
+            return;
+          } else if (isMounted) {
+            // Si no se puede obtener el usuario, limpiar la sesión
+            authService.logout();
+          }
+        }
+        
+        if (isMounted) {
+          dispatch({ type: 'SET_LOADING', payload: false });
+        }
+      } catch (e) {
+        console.error('checkAuth error:', e);
+        // En caso de error, limpiar la sesión y parar el loading
+        if (isMounted) {
+          authService.logout();
+          dispatch({ type: 'SET_LOADING', payload: false });
+        }
       }
     };
-
+    
     checkAuth();
+    
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
-  // Login
   const login = async (username, password) => {
     dispatch({ type: 'LOGIN_START' });
-    
     try {
-      const result = authService.login(username, password);
-      
-      if (result.success) {
+      const result = await authService.login(username, password);
+      if (result?.success) {
         dispatch({ type: 'LOGIN_SUCCESS', payload: result.user });
+        
+        // Refrescar el balance después del login exitoso
+        if (window.refreshMoneyContext) {
+          setTimeout(() => {
+            window.refreshMoneyContext();
+          }, 1000); // Pequeño delay para asegurar que se complete la aplicación de datos
+        }
+        
         return { success: true };
       } else {
-        dispatch({ type: 'LOGIN_ERROR', payload: result.error });
-        return { success: false, error: result.error };
+        const msg = result?.error || 'Credenciales inválidas';
+        dispatch({ type: 'LOGIN_ERROR', payload: msg });
+        return { success: false, error: msg };
       }
-    } catch (error) {
+    } catch {
       const errorMessage = 'Error al iniciar sesión';
       dispatch({ type: 'LOGIN_ERROR', payload: errorMessage });
       return { success: false, error: errorMessage };
     }
   };
 
-  // Register
   const register = async (userData) => {
-    dispatch({ type: 'LOGIN_START' });
-    
+    dispatch({ type: 'SET_LOADING', payload: true });
     try {
       const result = await authService.register(userData);
-      
-      if (result.success) {
+      if (result?.success) {
+        // Guardar la sesión después del registro exitoso
         dispatch({ type: 'LOGIN_SUCCESS', payload: result.user });
-        return { success: true };
+        
+        // Refrescar el balance después del registro exitoso
+        if (window.refreshMoneyContext) {
+          setTimeout(() => {
+            window.refreshMoneyContext();
+          }, 1000); // Pequeño delay para asegurar que se complete la aplicación de datos
+        }
+        
+        dispatch({ type: 'SET_LOADING', payload: false });
+        return { success: true, user: result.user };
       } else {
-        dispatch({ type: 'LOGIN_ERROR', payload: result.error });
-        return { success: false, error: result.error };
+        const msg = result?.error || 'Error al registrar usuario';
+        dispatch({ type: 'SET_LOADING', payload: false });
+        return { success: false, error: msg, errors: result?.errors };
       }
-    } catch (error) {
+    } catch {
       const errorMessage = 'Error al registrar usuario';
-      dispatch({ type: 'LOGIN_ERROR', payload: errorMessage });
+      dispatch({ type: 'SET_LOADING', payload: false });
       return { success: false, error: errorMessage };
     }
   };
 
-  // Logout
   const logout = () => {
-    authService.logout();
+    try { authService.logout(); } catch {}
     dispatch({ type: 'LOGOUT' });
   };
 
-  // Update profile
+  // Actualiza en backend y sincroniza contexto
   const updateProfile = async (userData) => {
     try {
-      const result = authService.updateProfile(userData);
-      
-      if (result.success) {
+      const result = await authService.updateMe(userData);
+      if (result?.success) {
         dispatch({ type: 'UPDATE_USER', payload: result.user });
         return { success: true };
       } else {
-        return { success: false, error: result.error };
+        return { success: false, error: result?.error || 'Error al actualizar perfil' };
       }
-    } catch (error) {
+    } catch {
       return { success: false, error: 'Error al actualizar perfil' };
     }
   };
 
-  // Change password
-  const changePassword = async (currentPassword, newPassword) => {
+  const deleteAccount = async () => {
     try {
-      const result = authService.changePassword(currentPassword, newPassword);
-      return result;
-    } catch (error) {
-      return { success: false, error: 'Error al cambiar contraseña' };
+      const result = await authService.deleteMe();
+      if (result?.success) {
+        dispatch({ type: 'LOGOUT' });
+        return { success: true };
+      } else {
+        return { success: false, error: result?.error || 'No se pudo eliminar la cuenta' };
+      }
+    } catch {
+      return { success: false, error: 'No se pudo eliminar la cuenta' };
     }
   };
 
-  // Forgot password
-  const forgotPassword = async (username) => {
+  const changePassword = async (current_password, new_password) => {
     try {
-      const result = authService.forgotPassword(username);
-      return result;
-    } catch (error) {
-      return { success: false, error: 'Error al enviar recuperación' };
+      const result = await authService.changePassword(current_password, new_password);
+      if (result?.success) return { success: true };
+      return { success: false, error: result?.error || 'No se pudo cambiar la contraseña' };
+    } catch {
+      return { success: false, error: 'No se pudo cambiar la contraseña' };
     }
   };
 
-  // Clear error
-  const clearError = () => {
-    dispatch({ type: 'CLEAR_ERROR' });
-  };
-
-  // Check if user is admin
-  const isAdmin = () => {
-    return authService.isAdmin();
-  };
-
-  // Get all users (admin only)
-  const getAllUsers = async () => {
-    try {
-      const result = authService.getAllUsers();
-      return result;
-    } catch (error) {
-      return { success: false, error: 'Error al obtener usuarios' };
-    }
-  };
+  const forgotPassword = async () => ({ success: true });
+  const clearError = () => dispatch({ type: 'CLEAR_ERROR' });
+  const isAdmin = () => false;
+  const getAllUsers = async () => ({ success: true, users: [] });
 
   const value = {
-    // State
     isAuthenticated: state.isAuthenticated,
-    user: state.user,
+    user: state.user,           // { id, nombre, correo }
     loading: state.loading,
     error: state.error,
-    
-    // Actions
+
     login,
     register,
     logout,
     updateProfile,
+    deleteAccount,
     changePassword,
     forgotPassword,
     clearError,
     isAdmin,
-    getAllUsers
+    getAllUsers,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-// Hook personalizado para usar el contexto
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  
-  if (!context) {
-    throw new Error('useAuth debe ser usado dentro de AuthProvider');
-  }
-  
+  if (!context) throw new Error('useAuth debe ser usado dentro de AuthProvider');
   return context;
 };

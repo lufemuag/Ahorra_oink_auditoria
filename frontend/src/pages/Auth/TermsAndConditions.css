@@ -1,282 +1,139 @@
-/* Página de Términos y Condiciones - Ahorra Oink */
+/* ===== Paleta (idéntica al dashboard) ===== */
+:root{
+  --green-dk: #0b3c2f;
+  --green:    #2f6e4f;
+  --green-md: #3c7e57;
+  --green-li: #6ea77f;
+  --yellow:   #f4d03f;
+  --paper:    #f6ed9e;
+  --ink:      #1e1e1e;
+  --amber:    #FFB823;
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+  --green-30: color-mix(in srgb, var(--green) 30%, transparent);
+  --green-40: color-mix(in srgb, var(--green) 40%, transparent);
+  --green-60: color-mix(in srgb, var(--green) 60%, transparent);
 }
 
-.terms-container {
+/* Reset */
+*{ margin:0; padding:0; box-sizing:border-box; }
+
+/* ===== Fondo del dashboard ===== */
+.terms-container{
   font-family: 'Arial', sans-serif;
-  background: #2d5016;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  color: #333;
-  position: relative;
+  min-height:100vh; display:flex; flex-direction:column;
+  color:var(--ink); position:relative;
+  background:
+    radial-gradient(900px 520px at 20% 25%, var(--green) 0%, color-mix(in srgb, var(--green) 0%, transparent 100%) 60%),
+    radial-gradient(900px 520px at 80% 70%, var(--green-dk) 0%, color-mix(in srgb, var(--green-dk) 0%, transparent 100%) 60%),
+    var(--green-dk);
 }
 
-/* Header */
-.terms-header {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  z-index: 10;
-  background-color: #f4d03f !important;
-  background: #f4d03f !important;
-  padding: 15px 20px !important;
-  border-radius: 10px;
+/* ===== Card ===== */
+.terms-main{
+  flex:1; display:flex; justify-content:center; align-items:center;
+  padding:84px 20px 120px; position:relative;
+}
+.terms-card{
+  position:relative; z-index:2;
+  width:100%; max-width:880px; border-radius:32px; padding:44px;
+  background:var(--paper);
+  box-shadow:0 28px 64px rgba(0,0,0,.45);
+  border:1px solid color-mix(in srgb, var(--green) 14%, transparent);
+}
+.terms-title{
+  color:var(--green);
+  font-size:32px; font-weight:900; text-align:center;
+  margin-bottom:26px; padding-bottom:14px;
+  border-bottom:3px solid var(--green);
 }
 
-.terms-logo {
-  color: #2d5016;
-  font-size: 20px;
-  font-weight: bold;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  display: flex;
-  gap: 5px;
+/* ===== Texto ===== */
+.terms-content{ line-height:1.6; position:relative; z-index:2; }
+.terms-section{ margin-bottom:22px; }
+.section-title{ color:var(--green); font-size:20px; font-weight:900; margin:18px 0 10px; }
+.terms-content p{ font-size:15px; color:var(--ink); margin-bottom:10px; }
+.terms-content strong{ color:var(--green); font-weight:800; }
+
+/* ===== Cerdos (CerdoSign) ===== */
+.pig-mid-left,
+.pig-bottom-right{
+  position:absolute; z-index:1;
+  pointer-events:none; user-select:none;
+  filter: drop-shadow(0 26px 36px rgba(0,0,0,.45))
+          drop-shadow(0 2px 0 rgba(0,0,0,.08));
+  opacity:0.92;
 }
 
-.logo-box {
-  border: 2px solid #2d5016;
-  padding: 5px 10px;
-  border-radius: 5px;
-  background: #f7f3a0;
-}
-
-/* Main content */
-.terms-main {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 80px 20px 120px 20px;
-  position: relative;
-}
-
-.terms-card {
-  background-color: #f7f3a0;
-  border-radius: 25px;
-  padding: 40px;
-  max-width: 800px;
-  width: 100%;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-  position: relative;
-  z-index: 5;
-  overflow: visible;
-}
-
-.terms-title {
-  color: #2d5016;
-  font-size: 32px;
-  font-weight: bold;
-  text-align: center;
-  margin-bottom: 30px;
-  border-bottom: 3px solid #2d5016;
-  padding-bottom: 15px;
-}
-
-.terms-content {
-  line-height: 1.6;
-}
-
-.terms-section {
-  margin-bottom: 25px;
-}
-
-.section-title {
-  color: #2d5016;
-  font-size: 20px;
-  font-weight: bold;
-  margin-bottom: 12px;
-  margin-top: 20px;
-}
-
-.subsection-title {
-  color: #2d5016;
-  font-size: 16px;
-  font-weight: 600;
-  margin-bottom: 8px;
-  margin-top: 15px;
-}
-
-.terms-content p {
-  color: #333;
-  font-size: 15px;
-  margin-bottom: 10px;
-}
-
-.terms-content strong {
-  color: #2d5016;
-  font-weight: 600;
-}
-
-.terms-list {
-  margin-left: 20px;
-  margin-bottom: 15px;
-}
-
-.terms-list li {
-  color: #333;
-  font-size: 15px;
-  margin-bottom: 6px;
-}
-
-.terms-contact {
-  margin-top: 30px;
-  padding-top: 20px;
-  border-top: 2px solid #5d8a66;
-}
-
-.terms-contact p {
-  text-align: center;
-  color: #333;
-  font-size: 15px;
-}
-
-.terms-contact strong {
-  color: #2d5016;
-}
-
-/* Pig illustrations */
-.terms-content {
-  position: relative;
-  overflow: visible;
-}
-
-.pig-left,
-.pig-right {
-  position: absolute;
-  z-index: 10;
-  pointer-events: none;
-}
-
-.pig-left {
-  top: -70px;
-  left: -70px;
-}
-
-.pig-right {
-  bottom: -70px;
-  right: -70px;
-}
-
-.pig-image {
-  width: 120px;
-  height: 120px;
+/* 🔧 Tamaño reducido y limpio */
+.pig-mid-left img,
+.pig-bottom-right img{
+  width: 260px !important;   /* antes 400px */
+  height: auto !important;
   object-fit: contain;
 }
 
-/* Footer */
-.terms-footer {
-  position: absolute;
-  bottom: 30px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10;
+/* Posiciones ajustadas */
+.pig-mid-left{
+  top: 50%;
+  left: -220px;
+  transform: translateY(-50%);
 }
 
+.pig-bottom-right{
+  bottom: -50px;
+  right: -200px;
+}
+
+/* Animación */
+@keyframes pigFloat{
+  0%,100%{ transform:translateY(0); }
+  50%{ transform:translateY(-10px); }
+}
+.pig-float img, .pig-float{ animation: pigFloat 3s ease-in-out infinite; }
+.pig-float-delayed img, .pig-float-delayed{ animation: pigFloat 3.4s ease-in-out .25s infinite; }
+
+/* ===== Botón (nuevo color: verde) ===== */
+.terms-actions{ display:flex; justify-content:center; margin-top:6px; }
 .back-button {
-  background: #4a7c59;
-  color: white;
-  border: none;
-  padding: 15px 30px;
-  border-radius: 25px;
+  background: linear-gradient(180deg, var(--green-md) 0%, var(--green-dk) 100%) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 999px;
+  padding: 16px 30px;
   font-size: 16px;
-  font-weight: bold;
+  font-weight: 900;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.35);
+  transition: transform .08s, box-shadow .2s, filter .2s;
 }
 
-.back-button:hover {
-  background: #2d5016;
-  transform: translateY(-2px);
-  box-shadow: 0 7px 20px rgba(0, 0, 0, 0.3);
+.back-button:hover{
+  transform:translateY(-2px);
+  box-shadow:0 18px 34px color-mix(in srgb, var(--green) 55%, black 0%);
 }
+.back-button:active{ transform:translateY(0); }
 
-.back-button:active {
-  transform: translateY(0);
+/* ===== Responsive ===== */
+@media (max-width:1024px){
+  .terms-main{ padding:60px 16px 90px; }
+  .pig-mid-left{ display:none; }
 }
+@media (max-width:768px){
+  .terms-card{ padding:30px 24px; border-radius:28px; }
+  .terms-title{ font-size:24px; }
+  .section-title{ font-size:18px; }
+  .terms-content p{ font-size:14px; }
+  .back-button{ padding:12px 24px; font-size:14px; }
 
-/* Responsive */
-@media (max-width: 1024px) {
-  .terms-main {
-    padding: 60px 20px 100px 20px;
-  }
-  
-  .pig-left,
-  .pig-right {
-    display: none;
-  }
+  .pig-bottom-right img{ width: 200px !important; }
+  .pig-bottom-right{ right:-160px; bottom:-40px; }
 }
+@media (max-width:480px){
+  .terms-card{ padding:22px 16px; }
+  .terms-title{ font-size:20px; }
+  .section-title{ font-size:16px; }
+  .terms-content p{ font-size:13px; }
 
-@media (max-width: 768px) {
-  .terms-header {
-    position: relative;
-    top: auto;
-    left: auto;
-    padding: 20px;
-    text-align: center;
-  }
-  
-  .terms-main {
-    padding: 20px 15px 80px 15px;
-  }
-  
-  .terms-card {
-    padding: 30px 25px;
-  }
-  
-  .terms-title {
-    font-size: 24px;
-  }
-  
-  .section-title {
-    font-size: 18px;
-  }
-  
-  .terms-content p,
-  .terms-list li {
-    font-size: 14px;
-  }
-  
-  .back-button {
-    padding: 12px 25px;
-    font-size: 14px;
-  }
-}
-
-
-@media (max-width: 480px) {
-  .terms-card {
-    padding: 20px 15px;
-  }
-  
-  .terms-title {
-    font-size: 20px;
-  }
-  
-  .section-title {
-    font-size: 16px;
-  }
-  
-  .terms-content p,
-  .terms-list li {
-    font-size: 13px;
-  }
-  
-  .terms-header {
-    padding: 15px;
-  }
-  
-  .terms-logo {
-    font-size: 16px;
-  }
-  
-  .logo-box {
-    padding: 3px 6px;
-    font-size: 14px;
-  }
+  .pig-bottom-right img{ width: 150px !important; }
+  .pig-bottom-right{ right:-120px; bottom:-30px; }
 }

@@ -1,26 +1,27 @@
-/* Estilos globales para la página de logros */
+/* ===========================
+   BASE / LAYOUT
+=========================== */
 body.achievements-page-active {
   margin: 0;
   padding: 0;
-  background: #2d5016 !important;
+  background:
+    radial-gradient(900px 520px at 20% 25%, var(--green) 0%, color-mix(in srgb, var(--green) 0%, transparent 100%) 60%),
+    radial-gradient(900px 520px at 80% 70%, var(--green-dk) 0%, color-mix(in srgb, var(--green-dk) 0%, transparent 100%) 60%),
+    var(--green-dk) !important;
 }
+
+
 
 .achievements-page {
   min-height: 100vh;
-  background: #2d5016;
-  color: white;
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  position: relative;
+  background:
+    radial-gradient(900px 520px at 20% 25%, var(--green) 0%, color-mix(in srgb, var(--green) 0%, transparent 100%) 60%),
+    radial-gradient(900px 520px at 80% 70%, var(--green-dk) 0%, color-mix(in srgb, var(--green-dk) 0%, transparent 100%) 60%),
+    var(--green-dk);
+  color: var(--green-dk);
 }
 
-/* Header Section */
-.achievements-header {
-  padding: 4rem 2rem 3rem;
-  background: #2d5016;
-  position: relative;
-}
+.achievements-header { padding: 3rem 2rem 1rem; }
 
 .header-content {
   max-width: 1200px;
@@ -28,747 +29,250 @@ body.achievements-page-active {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 3rem;
-}
-
-.header-text {
-  flex: 1;
-  text-align: center;
-}
-
-.header-text h1 {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: white;
-  line-height: 1.3;
-  margin: 0;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-.header-pig {
-  flex: 0 0 200px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-/* Pig Character Animation */
-.celebrating-pig {
-  position: relative;
-  width: 150px;
-  height: 150px;
-  animation: bounce 2s ease-in-out infinite;
-}
-
-.pig-body {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-
-.pig-face {
-  position: absolute;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 80px;
-  height: 80px;
-  background: #ffb3ba;
-  border-radius: 50%;
-  z-index: 3;
-}
-
-.pig-eyes {
-  position: absolute;
-  top: 25px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 15px;
-}
-
-.eye {
-  width: 8px;
-  height: 8px;
-  background: #000;
-  border-radius: 50%;
-}
-
-.eye.right.wink {
-  height: 4px;
-  border-radius: 50% 50% 0 0;
-}
-
-.pig-nose {
-  position: absolute;
-  top: 40px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 12px;
-  height: 10px;
-  background: #000;
-  border-radius: 50%;
-}
-
-.pig-smile {
-  position: absolute;
-  top: 55px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 25px;
-  height: 12px;
-  border: 2px solid #000;
-  border-top: none;
-  border-radius: 0 0 25px 25px;
-}
-
-.pig-cheeks {
-  position: absolute;
-  top: 45px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 60px;
-  height: 20px;
-  display: flex;
-  justify-content: space-between;
-}
-
-.pig-cheeks::before,
-.pig-cheeks::after {
-  content: '';
-  width: 8px;
-  height: 8px;
-  background: #ff69b4;
-  border-radius: 50%;
-  position: absolute;
-}
-
-.pig-cheeks::before {
-  left: -15px;
-}
-
-.pig-cheeks::after {
-  right: -15px;
-}
-
-.pig-hat {
-  position: absolute;
-  top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 60px;
-  height: 20px;
-  background: #d32f2f;
-  border-radius: 50% 50% 0 0;
-  z-index: 2;
-}
-
-.hat-decoration {
-  position: absolute;
-  top: -5px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 8px;
-  height: 8px;
-  background: #fff;
-  border-radius: 50%;
-}
-
-.pig-medal {
-  position: absolute;
-  top: 60px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 4;
-}
-
-.medal-ribbon {
-  width: 40px;
-  height: 20px;
-  background: #d32f2f;
-  border-radius: 10px;
-  position: relative;
-}
-
-.medal-badge {
-  position: absolute;
-  top: -8px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 16px;
-  height: 16px;
-  background: #ffeb3b;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 10px;
-  font-weight: bold;
-  color: #000;
-}
-
-.pig-arm {
-  position: absolute;
-  top: 70px;
-  right: 20px;
-  width: 15px;
-  height: 30px;
-  background: #ffb3ba;
-  border-radius: 15px 15px 0 0;
-  z-index: 2;
-  animation: wave 1s ease-in-out infinite alternate;
-}
-
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
-}
-
-@keyframes wave {
-  0% { transform: rotate(-10deg); }
-  100% { transform: rotate(10deg); }
-}
-
-/* Achievements Grid */
-.achievements-grid {
-  padding: 2rem;
-  max-width: 1400px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
   gap: 2rem;
 }
 
-/* Achievement Card */
+.header-text { flex: 1; text-align: center; }
+
+.header-text h1 {
+  margin: 0;
+  color: #fff4cc;
+  font-weight: 900;
+  line-height: 1.15;
+  font-size: 3rem;
+  text-shadow: 0 2px 0 rgba(0,0,0,.25);
+}
+
+.header-pig-image { flex: 0 0 260px; display: flex; align-items: center; justify-content: center; }
+.header-pig-img { width: 260px; height: 260px; object-fit: contain; filter: drop-shadow(0 6px 10px rgba(0,0,0,.35)); }
+
+/* ===========================
+   LISTA
+=========================== */
+.achievements-grid {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 3rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+}
+
 .achievement-card {
-  perspective: 1000px;
-  height: 200px;
+  position: relative;
+  width: 78%;
+  border-radius: 40px;
+  z-index: 0;
 }
 
-.card-inner {
+.achievement-card.align-left  { justify-self: start; }
+.achievement-card.align-right { justify-self: end;   }
+
+/* ===========================
+   FLIP EFFECT
+=========================== */
+.flip-card {
+  perspective: 1100px;
+  border-radius: 40px;
   position: relative;
-  width: 100%;
-  height: 100%;
-  text-align: center;
-  transition: transform 0.8s;
+}
+
+.flip-inner {
+  position: relative;
   transform-style: preserve-3d;
+  transition: transform .7s cubic-bezier(.2,.8,.2,1);
+  border-radius: 40px;
 }
 
-.achievement-card:hover .card-inner {
+.unlocked .flip-card:hover .flip-inner,
+.unlocked .flip-card:focus-within .flip-inner {
   transform: rotateY(180deg);
 }
 
-.card-front,
-.card-back {
-  position: absolute;
-  width: 100%;
-  height: 100%;
+.flip-face {
+  border-radius: 40px;
   backface-visibility: hidden;
-  border-radius: 45px;
-  overflow: hidden;
+  -webkit-backface-visibility: hidden;
+  -moz-backface-visibility: hidden;
+  -ms-backface-visibility: hidden;
 }
 
-.card-back {
-  transform: rotateY(180deg);
-}
-
-/* Card Border and Background */
-.card-border {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  border: 4px solid #ffd54f;
-  border-radius: 45px;
-  z-index: 1;
-}
-
-.card-content {
+.flip-front {
   position: relative;
-  height: 100%;
-  background: #ffecb3;
-  color: #2d5016;
-  padding: 1.5rem;
-  display: flex;
-  align-items: center;
+  transform: rotateY(0deg);
   z-index: 2;
 }
 
-/* Card Back Content with Scroll */
-.card-back .card-content {
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: flex-start;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding: 1.5rem;
+.flip-back {
+  position: absolute;
+  inset: 0;
+  transform: rotateY(180deg);
+  z-index: 1;
 }
 
-.card-back .card-content::-webkit-scrollbar {
-  width: 6px;
+/* ===========================
+   MARCO
+=========================== */
+.card-frame {
+  background: #f4a51e;
+  border-radius: 40px;
+  padding: 24px;
+  box-shadow: 0 16px 26px rgba(0,0,0,.25);
 }
 
-.card-back .card-content::-webkit-scrollbar-track {
-  background: rgba(45, 80, 22, 0.1);
-  border-radius: 3px;
+.locked .card-frame {
+  background: #8a8a8a;
+  box-shadow: 0 12px 22px rgba(0,0,0,.22);
 }
 
-.card-back .card-content::-webkit-scrollbar-thumb {
-  background: rgba(45, 80, 22, 0.3);
-  border-radius: 3px;
-}
-
-.card-back .card-content::-webkit-scrollbar-thumb:hover {
-  background: rgba(45, 80, 22, 0.5);
-}
-
-/* Front Card Styles */
-.card-front .card-content {
-  justify-content: space-between;
+/* ===========================
+   CONTENIDO
+=========================== */
+.card-content {
+  background: #ffef9e;
+  border-radius: 26px;
+  display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 1.3rem 2rem;
+  min-height: 200px;
+  box-shadow: inset 0 0 0 2px rgba(0,0,0,.06);
 }
 
+.align-left  .card-illustration { order: 1; }
+.align-left  .card-text         { order: 2; text-align: left; }
+.align-right .card-illustration { order: 2; }
+.align-right .card-text         { order: 1; text-align: right; }
+
+.locked .card-content {
+  background: #cfcfd3;
+  box-shadow: inset 0 0 0 2px rgba(0,0,0,.08);
+}
+
+/* ===========================
+   ILUSTRACIÓN
+=========================== */
+.card-illustration {
+  flex: 0 0 200px;
+  min-width: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.unlocked-box,
+.locked-box {
+  width: 180px;
+  height: 180px;
+  border-radius: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.unlocked-box {
+  background: #ffef9e;
+  border: 3px solid rgba(0,0,0,.06);
+  box-shadow: inset 0 0 0 2px rgba(0,0,0,.06), 0 3px 8px rgba(0,0,0,.08);
+}
+
+.locked-box {
+  background: #eceff3;
+  border: 3px solid #cdd6de;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.6), 0 3px 8px rgba(0,0,0,.08);
+}
+
+.locked-box span { font-size: 6rem; font-weight: 900; color: #9aa4ac; line-height: 1; }
+
+.pig-image { width: 85%; height: 85%; object-fit: contain; }
+
+/* ===========================
+   TEXTO
+=========================== */
 .card-text {
-  flex: 1;
-  text-align: left;
-  padding-right: 1rem;
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
+  overflow: hidden;
 }
 
 .achievement-title {
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: #2d5016;
-  margin: 0 0 0.5rem 0;
-  line-height: 1.2;
+  margin: 0;
+  color: #1c5b45;
+  font-weight: 900;
+  font-size: 2.1rem;
+  line-height: 1.1;
+  text-shadow: 0 1px 0 rgba(255,255,255,.55);
 }
 
 .achievement-subtitle {
-  font-size: 0.9rem;
-  color: #2d5016;
-  margin: 0 0 1rem 0;
-  line-height: 1.3;
-  opacity: 0.8;
+  margin: .25rem 0 0;
+  color: #2b6a56;
+  font-weight: 800;
+  font-size: 1.15rem;
+  white-space: pre-line;
+  text-shadow: 0 1px 0 rgba(255,255,255,.5);
 }
 
-.achievement-category {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.category-icon {
-  font-size: 1rem;
-}
-
-.category-text {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #2d5016;
-  background: rgba(45, 80, 22, 0.1);
-  padding: 0.2rem 0.5rem;
-  border-radius: 10px;
-}
-
-/* Card Illustration */
-.card-illustration {
-  flex: 0 0 80px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.pig-image-container {
-  position: relative;
-  width: 60px;
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.pig-image {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
-}
-
-/* Back Card Styles */
 .achievement-details {
-  width: 100%;
-  min-height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
+  margin-top: .35rem;
+  color: #204e3e;
+  font-weight: 700;
+  line-height: 1.35;
+  text-shadow: 0 1px 0 rgba(255,255,255,.45);
+}
+
+.ach-date, .hint {
+  margin-top: .6rem;
+  font-size: .95rem;
+  color: #356b57;
+}
+
+.mask-line {
+  width: 220px; height: 6px;
+  background: #8a8a8a; opacity: .9;
+  border-radius: 3px;
+}
+
+.locked .achievement-title,
+.locked .achievement-subtitle { color: #6d6d6d; text-shadow: none; }
+
+/* ===========================
+   REVERSO INVERTIDO
+=========================== */
+.flip-back.align-left .card-text {
+  order: 1;
   text-align: left;
-  gap: 1rem;
+}
+.flip-back.align-left .card-illustration {
+  order: 2;
+}
+.flip-back.align-right .card-text {
+  order: 2;
+  text-align: right;
+}
+.flip-back.align-right .card-illustration {
+  order: 1;
 }
 
-.detail-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 1rem;
+/* ===========================
+   RESPONSIVE
+=========================== */
+@media (max-width: 900px) {
+  .achievement-card { width: 100%; }
 }
 
-.detail-header h4 {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: #2d5016;
-  margin: 0;
-  flex: 1;
-}
+@media (max-width: 760px) {
+  .header-text h1 { font-size: 2.2rem; }
+  .header-pig-image { flex-basis: 200px; }
+  .header-pig-img { width: 200px; height: 200px; }
 
-.level-badge {
-  padding: 0.3rem 0.8rem;
-  border-radius: 15px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.level-badge.principiante { background: #4caf50; color: white; }
-.level-badge.intermedio { background: #ff9800; color: white; }
-.level-badge.avanzado { background: #2196f3; color: white; }
-.level-badge.experto { background: #9c27b0; color: white; }
-.level-badge.profesional { background: #f44336; color: white; }
-.level-badge.sabio { background: #ffeb3b; color: #2d5016; }
-
-.detail-description {
-  margin-bottom: 1rem;
-}
-
-.detail-description p {
-  font-size: 0.9rem;
-  color: #2d5016;
-  margin: 0;
-  line-height: 1.4;
-}
-
-.detail-requirement,
-.detail-reward {
-  margin-bottom: 1rem;
-}
-
-.detail-requirement h5,
-.detail-reward h5 {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #2d5016;
-  margin: 0 0 0.3rem 0;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.detail-requirement p,
-.detail-reward p {
-  font-size: 0.85rem;
-  color: #2d5016;
-  margin: 0;
-  line-height: 1.3;
-}
-
-.reward-text {
-  font-weight: 600;
-  color: #ff9800;
-}
-
-/* Achievement Status */
-.achievement-status {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 1rem;
-  border-radius: 15px;
-  text-align: center;
-}
-
-.achievement-status.unlocked {
-  background: rgba(76, 175, 80, 0.1);
-  border: 2px solid #4caf50;
-}
-
-.achievement-status.locked {
-  background: rgba(117, 117, 117, 0.1);
-  border: 2px solid #757575;
-}
-
-.status-icon {
-  font-size: 1.5rem;
-}
-
-.achievement-status.unlocked .status-icon {
-  color: #4caf50;
-}
-
-.achievement-status.locked .status-icon {
-  color: #757575;
-}
-
-.achievement-status span {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #2d5016;
-}
-
-.achievement-status small {
-  font-size: 0.7rem;
-  color: #2d5016;
-  opacity: 0.7;
-}
-
-/* Reward Info */
-.reward-info {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-  padding: 0.5rem;
-  background: rgba(255, 193, 7, 0.1);
-  border-radius: 10px;
-  border: 1px solid rgba(255, 193, 7, 0.3);
-}
-
-.reward-icon {
-  color: #ffc107;
-  font-size: 1rem;
-}
-
-.reward-info span {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #2d5016;
-}
-
-/* Progress Section */
-.progress-section {
-  width: 100%;
-  margin-top: 1rem;
-}
-
-.progress-info {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.5rem;
-  font-size: 0.8rem;
-  color: #2d5016;
-}
-
-.progress-info span:first-child {
-  font-weight: 600;
-}
-
-.progress-info span:last-child {
-  font-weight: 700;
-  color: #ff9800;
-}
-
-/* Tips Section */
-.tips-section {
-  margin-top: 1rem;
-  padding: 0.8rem;
-  background: rgba(33, 150, 243, 0.1);
-  border-radius: 10px;
-  border: 1px solid rgba(33, 150, 243, 0.2);
-}
-
-.tips-section h6 {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #2d5016;
-  margin: 0 0 0.5rem 0;
-}
-
-.tips-section ul {
-  margin: 0;
-  padding-left: 1rem;
-  list-style: none;
-}
-
-.tips-section li {
-  font-size: 0.75rem;
-  color: #2d5016;
-  margin-bottom: 0.3rem;
-  position: relative;
-}
-
-.tips-section li::before {
-  content: '•';
-  color: #2196f3;
-  font-weight: bold;
-  position: absolute;
-  left: -1rem;
-}
-
-/* Progress Bar */
-.progress-bar {
-  width: 100%;
-  height: 6px;
-  background: rgba(117, 117, 117, 0.2);
-  border-radius: 3px;
-  overflow: hidden;
-  margin: 0.5rem 0;
-}
-
-.progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #ff9800, #ffc107);
-  border-radius: 3px;
-  transition: width 0.3s ease;
-}
-
-/* Unlocked Card Styles (Golden Border) */
-.achievement-card.unlocked .card-border {
-  border-color: #ffd700;
-  border-width: 5px;
-  box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
-}
-
-.achievement-card.unlocked .card-content {
-  background: #ffecb3;
-  color: #2d5016;
-}
-
-.achievement-card.unlocked .achievement-title,
-.achievement-card.unlocked .achievement-subtitle {
-  color: #2d5016;
-}
-
-/* Locked Card Styles (Gray Border) */
-.achievement-card.locked .card-border {
-  border-color: #bdbdbd;
-  border-width: 4px;
-  box-shadow: 0 0 10px rgba(189, 189, 189, 0.2);
-}
-
-.achievement-card.locked .card-content {
-  background: #f5f5f5;
-  color: #757575;
-}
-
-.achievement-card.locked .achievement-title,
-.achievement-card.locked .achievement-subtitle {
-  color: #757575;
-}
-
-/* Locked Card Question Mark */
-.achievement-card.locked .card-illustration {
-  position: relative;
-}
-
-.achievement-card.locked .pig-character {
-  display: none;
-}
-
-.achievement-card.locked .card-illustration::after {
-  content: '?';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 3rem;
-  font-weight: bold;
-  color: #9e9e9e;
-  background: #e0e0e0;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 2px solid #9e9e9e;
-}
-
-/* Locked Card Text Styling */
-.achievement-card.locked .achievement-title {
-  color: #757575 !important;
-}
-
-.achievement-card.locked .achievement-subtitle {
-  color: #9e9e9e !important;
-  font-family: monospace;
-  letter-spacing: 2px;
-}
-
-.achievement-card.locked .category-text {
-  background: rgba(117, 117, 117, 0.1) !important;
-  color: #757575 !important;
-}
-
-.achievement-card.locked .category-icon {
-  color: #9e9e9e !important;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .header-content {
-    flex-direction: column;
-    text-align: center;
-    gap: 2rem;
-  }
-  
-  .header-text h1 {
-    font-size: 2rem;
-  }
-  
-  .header-pig {
-    flex: none;
-  }
-  
-  .achievements-grid {
-    grid-template-columns: 1fr;
-    padding: 1rem;
-    gap: 1.5rem;
-  }
-  
-  .achievement-card {
-    height: 180px;
-  }
-  
-  .card-content {
-    padding: 1rem;
-  }
-  
-  .achievement-title {
-    font-size: 1.2rem;
-  }
-  
-  .achievement-subtitle {
-    font-size: 0.8rem;
-  }
-  
-  .card-illustration {
-    flex: 0 0 60px;
-  }
-  
-  .pig-image-container {
-    width: 50px;
-    height: 50px;
-  }
-}
-
-@media (max-width: 480px) {
-  .achievements-header {
-    padding: 2rem 1rem;
-  }
-  
-  .header-text h1 {
-    font-size: 1.5rem;
-  }
-  
-  .achievements-grid {
-    padding: 0.5rem;
-  }
-  
-  .achievement-card {
-    height: 160px;
-  }
-  
-  .card-content {
-    padding: 0.8rem;
-  }
+  .card-content { padding: 1.1rem 1.2rem; min-height: 180px; }
+  .unlocked-box, .locked-box { width: 150px; height: 150px; }
+  .card-illustration { flex-basis: 150px; min-width: 150px; }
+  .achievement-title { font-size: 1.8rem; }
+  .achievement-subtitle { font-size: 1.02rem; }
 }

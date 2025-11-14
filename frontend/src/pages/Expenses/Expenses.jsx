@@ -1,297 +1,345 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { useMoney } from '../../context/MoneyContext';
 import { transactionService } from '../../services/transactionService';
-import { 
-  FaDollarSign,
-  FaTag,
+import {
   FaPlus,
   FaEdit,
   FaTrash,
+  FaTag,
+  FaDollarSign,
+  FaReceipt,
+  FaSpinner,
+  FaArrowUp,
+  FaArrowDown,
   FaPiggyBank,
-  FaReceipt
+  FaCalendarAlt
 } from 'react-icons/fa';
+import pigHead from '../../assets/cabeza.png';
 import './Expenses.css';
+import { triggerAchievementsRefresh } from '../../utils/achievements';
 
 const Expenses = () => {
   const { user } = useAuth();
+  const { totalAmount } = useMoney();
   const [transactions, setTransactions] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [currentBalance, setCurrentBalance] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [formData, setFormData] = useState({
-    type: 'expense', // 'expense', 'income', 'savings'
+    type: 'expense',
     amount: '',
     category: '',
-    description: ''
+    description: '',
+    date: ''
   });
   const [editingId, setEditingId] = useState(null);
-  const [loading, setLoading] = useState(false);
 
-  const categories = {
-    expense: [
-      'Alimentación',
-      'Transporte',
-      'Entretenimiento',
-      'Salud',
-      'Educación',
-      'Vivienda',
-      'Ropa',
-      'Tecnología',
-      'Otros'
-    ],
-    income: [
-      'Salario',
-      'Freelance',
-      'Inversiones',
-      'Ventas',
-      'Bonificaciones',
-      'Otros ingresos'
-    ],
-    savings: [
-      'Fondo de emergencia',
-      'Vacaciones',
-      'Educación',
-      'Casa',
-      'Coche',
-      'Retiro',
-      'Otros ahorros'
-    ]
+  const defaultCategories = {
+    expense: ['Alimentación','Transporte','Entretenimiento','Salud','Educación','Vivienda','Otros'],
+    income: ['Salario','Freelance','Inversiones','Ventas','Bonificaciones','Otros ingresos'],
+    savings: ['Fondo de emergencia','Vacaciones','Casa','Coche','Retiro','Otros ahorros']
   };
 
   useEffect(() => {
-    if (user?.id) {
-      loadTransactions();
-    }
-  }, [user]);
-
-  useEffect(() => {
-    // Agregar clase al body cuando se monta el componente
-    document.body.classList.add('expenses-page-active');
+    loadTransactions();
+    loadCategories();
+    loadCurrentBalance();
     
-    // Limpiar clase del body cuando se desmonta el componente
-    return () => {
-      document.body.classList.remove('expenses-page-active');
-    };
+    const now = new Date();
+    const colombiaDate = new Date(now.toLocaleString("en-US", {timeZone: "America/Bogota"}));
+    const todayString = colombiaDate.toISOString().split('T')[0];
+    
+    setFormData(prev => ({
+      ...prev,
+      date: todayString
+    }));
   }, []);
 
-  const loadTransactions = () => {
+  useEffect(() => {
+    if (user?.id) {
+      loadCurrentBalance();
+    }
+  }, [user?.id, totalAmount]);
+
+  const loadTransactions = async () => {
+    setLoading(true);
+    setError('');
     try {
-      if (user?.id) {
-        // Obtener transacciones reales del usuario
-        const userTransactions = transactionService.getByUser(user.id);
-        setTransactions(userTransactions);
+      const result = await transactionService.getTransactions();
+      if (result.success) {
+        setTransactions(result.transactions || []);
       } else {
-        setTransactions([]);
+        setError(result.error || 'Error al cargar transacciones');
       }
-    } catch (error) {
-      console.error('Error loading transactions:', error);
-      setTransactions([]);
+    } catch (err) {
+      console.error('Error cargando transacciones:', err);
+      setError('Error de conexión al cargar transacciones. Verifica tu conexión a internet.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadCategories = async () => {
+    try {
+      const result = await transactionService.getCategories();
+      if (result.success) {
+        setCategories(result.categories);
+      }
+    } catch (err) {
+      console.error('Error cargando categorías:', err);
+    }
+  };
+
+  const loadCurrentBalance = async () => {
+    try {
+      console.log('=== CARGANDO BALANCE EN PÁGINA DE GASTOS ===');
+      const authData = localStorage.getItem('ahorra_oink_auth');
+      if (!authData) {
+        console.log('No hay datos de autenticación');
+        return;
+      }
+      
+      const session = JSON.parse(authData);
+      const token = session.token;
+      console.log('Token encontrado:', token ? 'Sí' : 'No');
+      
+      const response = await fetch('http://localhost:8000/api/auth/me/', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      console.log('Respuesta del servidor:', response.status, response.statusText);
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Datos del usuario recibidos:', data);
+        const balance = data.current_balance || 0;
+        console.log('Balance establecido:', balance);
+        setCurrentBalance(balance);
+      } else {
+        console.error('Error en la respuesta del servidor:', response.status);
+      }
+    } catch (err) {
+      console.error('Error cargando balance:', err);
     }
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    if (name === 'amount') {
+      const numValue = parseFloat(value);
+      if (value && !isNaN(numValue)) {
+        if (numValue > 1000000000) {
+          setError('El monto no puede exceder 1 billón');
+          return;
+        }
+        if (numValue <= 0) {
+          setError('El monto debe ser mayor a 0');
+          return;
+        }
+      }
+      setError('');
+    }
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleTypeChange = (type) => {
-    setFormData(prev => ({
-      ...prev,
-      type: type,
-      category: '' // Reset category when type changes
-    }));
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.amount || !formData.category || !formData.description) {
-      alert('Por favor completa todos los campos');
+      setError('Completa todos los campos');
       return;
     }
 
-    if (editingId) {
-      // Editar transacción existente
-      const transactionToUpdate = transactions.find(t => t.id === editingId);
-      if (transactionToUpdate) {
-        const updatedTransaction = {
-          ...transactionToUpdate,
-          type: formData.type,
-          amount: parseFloat(formData.amount),
-          category: formData.category,
-          description: formData.description,
-          date: new Date().toISOString()
-        };
-        
-        // Actualizar en el servicio (aquí necesitaríamos una función update)
-        // Por ahora, eliminamos y creamos una nueva
-        transactionService.delete(editingId);
-        const result = transactionService.create({
-          userId: user.id,
-          type: formData.type,
-          amount: parseFloat(formData.amount),
-          category: formData.category,
-          description: formData.description,
-          date: new Date().toISOString()
-        });
-        
-        if (result.success) {
-          loadTransactions(); // Recargar transacciones
-          setEditingId(null);
-        }
+    const amount = parseFloat(formData.amount);
+    if (amount <= 0) {
+      setError('El monto debe ser mayor a 0');
+      return;
+    }
+    if (amount > 1000000000) {
+      setError('El monto no puede exceder 1 billón');
+      return;
+    }
+    if (formData.description.trim().length < 3) {
+      setError('La descripción debe tener al menos 3 caracteres');
+      return;
+    }
+
+    setSubmitting(true);
+    setError('');
+
+    try {
+      let dateString;
+      if (formData.date) {
+        dateString = formData.date;
+      } else {
+        const now = new Date();
+        const colombiaDate = new Date(now.toLocaleString("en-US", {timeZone: "America/Bogota"}));
+        dateString = colombiaDate.toISOString().split('T')[0];
       }
-    } else {
-      // Agregar nueva transacción
-      const result = transactionService.create({
-        userId: user.id,
+      
+      const transactionData = {
         type: formData.type,
         amount: parseFloat(formData.amount),
+        description: formData.description.trim(),
         category: formData.category,
-        description: formData.description,
-        date: new Date().toISOString()
-      });
-      
-      if (result.success) {
-        loadTransactions(); // Recargar transacciones
+        date: dateString
+      };
+
+      let result;
+      if (editingId) {
+        result = await transactionService.updateTransaction(editingId, transactionData);
       } else {
-        alert('Error al crear la transacción');
+        result = await transactionService.createTransaction(transactionData);
       }
+
+      if (result.success) {
+        await loadTransactions();
+        await loadCurrentBalance();
+        triggerAchievementsRefresh();
+        setFormData({ type: 'expense', amount: '', category: '', description: '', date: '' });
+        setEditingId(null);
+        setError('');
+        setSuccess(editingId ? 'Transacción actualizada correctamente' : 'Transacción guardada correctamente');
+        setTimeout(() => setSuccess(''), 3000);
+      } else {
+        if (typeof result.error === 'object') {
+          const errorMessages = Object.values(result.error).flat();
+          setError(errorMessages.join(', '));
+        } else {
+          setError(result.error || 'Error al procesar la transacción');
+        }
+      }
+    } catch (err) {
+      console.error('Error en handleSubmit:', err);
+      setError('Error de conexión. Verifica tu conexión a internet e intenta nuevamente.');
+    } finally {
+      setSubmitting(false);
     }
-    
-    // Reset form
-    setFormData({
-      type: 'expense',
-      amount: '',
-      category: '',
-      description: ''
-    });
   };
 
-  const handleDelete = (id) => {
-    if (window.confirm('¿Estás seguro de que quieres eliminar este registro?')) {
-      const result = transactionService.delete(id);
-      if (result.success) {
-        loadTransactions(); // Recargar transacciones
-      } else {
-        alert('Error al eliminar la transacción');
+  const handleDelete = async (id) => {
+    if (window.confirm('¿Eliminar esta transacción?')) {
+      try {
+        const result = await transactionService.deleteTransaction(id);
+        if (result.success) {
+          await loadTransactions(); 
+          await loadCurrentBalance(); 
+          triggerAchievementsRefresh();
+          setError(''); 
+          setSuccess('Transacción eliminada correctamente');
+          setTimeout(() => setSuccess(''), 3000); 
+        } else {
+          setError(result.error || 'Error al eliminar la transacción');
+        }
+      } catch (err) {
+        console.error('Error eliminando transacción:', err);
+        setError('Error de conexión al eliminar la transacción. Verifica tu conexión a internet.');
       }
     }
   };
 
-  const handleEdit = (transaction) => {
+  const handleEdit = (tx) => {
+    setError('');
+    setSuccess('');
     setFormData({
-      type: transaction.type,
-      amount: transaction.amount.toString(),
-      category: transaction.category,
-      description: transaction.description
+      type: tx.type || 'expense',
+      amount: tx.amount ? tx.amount.toString() : '',
+      category: tx.category_name || tx.category || '',
+      description: typeof tx.description === 'string' ? tx.description : (tx.description?.description || ''),
+      date: tx.date || ''
     });
-    setEditingId(transaction.id);
-    
-    // Scroll to form
-    document.querySelector('.form-section').scrollIntoView({ 
-      behavior: 'smooth' 
-    });
+    setEditingId(tx.id);
   };
 
   const handleCancelEdit = () => {
+    setFormData({ type: 'expense', amount: '', category: '', description: '', date: '' });
     setEditingId(null);
-    setFormData({
-      type: 'expense',
-      amount: '',
-      category: '',
-      description: ''
-    });
+    setError('');
+    setSuccess('');
   };
 
-  const getTypeIcon = (type) => {
-    switch (type) {
-      case 'income':
-        return '💰';
-      case 'savings':
-        return '🏦';
-      case 'expense':
-      default:
-        return '💸';
-    }
-  };
-
-  const getTypeColor = (type) => {
-    switch (type) {
-      case 'income':
-        return '#4caf50';
-      case 'savings':
-        return '#2196f3';
-      case 'expense':
-      default:
-        return '#f44336';
-    }
-  };
-
-  const getTypeLabel = (type) => {
-    switch (type) {
-      case 'income':
-        return 'Ingreso';
-      case 'savings':
-        return 'Ahorro';
-      case 'expense':
-      default:
-        return 'Gasto';
-    }
-  };
-
+  const getTypeLabel = (type) => type === 'income' ? 'Ingreso' : type === 'savings' ? 'Ahorro' : 'Gasto';
+  const getTypeIcon = (type) => type === 'income' ? '💰' : type === 'savings' ? '🏦' : '💸';
   const getTotalByType = (type) => {
     return transactions
       .filter(t => t.type === type)
-      .reduce((sum, t) => sum + t.amount, 0);
+      .reduce((sum, t) => sum + parseFloat(t.amount), 0);
   };
+
+  const totalIncome = getTotalByType('income');
+  const totalExpenses = getTotalByType('expense');
+  const totalSavings = getTotalByType('savings');
+  const availableMoney = currentBalance;
 
   return (
     <div className="expenses-page">
-      {/* Sección 1: Formulario */}
       <div className="form-section">
         <div className="form-container">
           <div className="form-header">
-            <h1>Gestiona tus finanzas con Oink</h1>
-            <p>
-              Registra aquí tus gastos, ingresos y ahorros diarios, semanales o mensuales.
-              De esta manera, Oink te ayudará a tener un mayor control de tus finanzas.
-            </p>
+            <h1>Registra tus movimientos con Oink</h1>
+            <p>Gastos, ingresos y ahorros — todo en un solo lugar.</p>
           </div>
 
           <div className="form-content">
             <div className="form-left">
+              {error && (
+                <div className="error-message" style={{ 
+                  background: '#fee', 
+                  color: '#c33', 
+                  padding: '10px', 
+                  borderRadius: '5px', 
+                  marginBottom: '20px',
+                  border: '1px solid #fcc'
+                }}>
+                  {error}
+                </div>
+              )}
+              {success && (
+                <div className="success-message" style={{ 
+                  background: '#efe', 
+                  color: '#363', 
+                  padding: '10px', 
+                  borderRadius: '5px', 
+                  marginBottom: '20px',
+                  border: '1px solid #cfc'
+                }}>
+                  {success}
+                </div>
+              )}
               <form onSubmit={handleSubmit} className="transaction-form">
-                {/* Tipo de transacción */}
                 <div className="form-group">
-                  <label className="form-label">Tipo de transacción</label>
-                  <div className="type-buttons">
+                  <label className="form-label">Tipo de movimiento</label>
+                  <div className="type-selector">
                     <button
                       type="button"
                       className={`type-btn ${formData.type === 'expense' ? 'active' : ''}`}
-                      onClick={() => handleTypeChange('expense')}
+                      onClick={() => setFormData(prev => ({ ...prev, type: 'expense' }))}
                     >
-                      <span>💸</span>
-                      Gastos
+                      💸 Gasto
                     </button>
                     <button
                       type="button"
                       className={`type-btn ${formData.type === 'income' ? 'active' : ''}`}
-                      onClick={() => handleTypeChange('income')}
+                      onClick={() => setFormData(prev => ({ ...prev, type: 'income' }))}
                     >
-                      <span>💰</span>
-                      Ingresos
+                      💰 Ingreso
                     </button>
                     <button
                       type="button"
                       className={`type-btn ${formData.type === 'savings' ? 'active' : ''}`}
-                      onClick={() => handleTypeChange('savings')}
+                      onClick={() => setFormData(prev => ({ ...prev, type: 'savings' }))}
                     >
-                      <span>🏦</span>
-                      Ahorros
+                      🏦 Ahorro
                     </button>
                   </div>
                 </div>
 
-                {/* Monto */}
                 <div className="form-group">
                   <label className="form-label">Monto</label>
                   <div className="input-container">
@@ -303,12 +351,14 @@ const Expenses = () => {
                       onChange={handleInputChange}
                       placeholder="Ej: $20.000"
                       className="form-input"
+                      min="0.01"
+                      max="1000000000"
+                      step="0.01"
                       required
                     />
                   </div>
                 </div>
 
-                {/* Categoría */}
                 <div className="form-group">
                   <label className="form-label">Categoría</label>
                   <div className="input-container">
@@ -321,16 +371,13 @@ const Expenses = () => {
                       required
                     >
                       <option value="">Selecciona una categoría</option>
-                      {categories[formData.type].map(category => (
-                        <option key={category} value={category}>
-                          {category}
-                        </option>
+                      {defaultCategories[formData.type].map(c => (
+                        <option key={c} value={c}>{c}</option>
                       ))}
                     </select>
                   </div>
                 </div>
 
-                {/* Descripción */}
                 <div className="form-group">
                   <label className="form-label">Descripción</label>
                   <div className="input-container">
@@ -347,17 +394,45 @@ const Expenses = () => {
                   </div>
                 </div>
 
-                {/* Botones de envío */}
+                <div className="form-group">
+                  <label className="form-label">Fecha</label>
+                  <div className="input-container">
+                    <FaCalendarAlt className="input-icon" />
+                    <input
+                      type="date"
+                      name="date"
+                      value={formData.date}
+                      onChange={handleInputChange}
+                      className="form-input"
+                      required
+                    />
+                  </div>
+                </div>
+
                 <div className="form-buttons">
-                  <button type="submit" className="submit-btn">
-                    <FaPlus />
-                    {editingId ? 'Actualizar' : 'Agregar'} {getTypeLabel(formData.type)}
+                  <button 
+                    type="submit" 
+                    className="submit-btn"
+                    disabled={submitting}
+                  >
+                    {submitting ? (
+                      <>
+                        <FaSpinner className="fa-spin" />
+                        Procesando...
+                      </>
+                    ) : (
+                      <>
+                        <FaPlus />
+                        {editingId ? 'Actualizar' : 'Agregar'} {getTypeLabel(formData.type)}
+                      </>
+                    )}
                   </button>
                   {editingId && (
                     <button 
                       type="button" 
                       className="cancel-btn"
                       onClick={handleCancelEdit}
+                      disabled={submitting}
                     >
                       Cancelar Edición
                     </button>
@@ -367,54 +442,72 @@ const Expenses = () => {
             </div>
 
             <div className="form-right">
-              <div className="pig-illustration">
-                <div className="pig-head">
-                  <div className="pig-glasses"></div>
-                  <div className="pig-eyes">
-                    <div className="eye left"></div>
-                    <div className="eye right"></div>
-                  </div>
-                  <div className="pig-nose"></div>
-                  <div className="pig-smile"></div>
-                  <div className="pig-hat"></div>
-                </div>
+              <img src={pigHead} alt="Cerdito Oink" className="pig-image" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Sección de totales */}
+      <div className="totals-section">
+        <div className="totals-container">
+          <h2>Resumen de tu dinero</h2>
+          <div className="totals-grid">
+            <div className="total-card income">
+              <div className="total-icon">
+                <FaArrowUp />
+              </div>
+              <div className="total-content">
+                <h3>Ingresos</h3>
+                <p className="total-amount">${totalIncome.toLocaleString()}</p>
+              </div>
+            </div>
+            
+            <div className="total-card expense">
+              <div className="total-icon">
+                <FaArrowDown />
+              </div>
+              <div className="total-content">
+                <h3>Gastos</h3>
+                <p className="total-amount">${totalExpenses.toLocaleString()}</p>
+              </div>
+            </div>
+            
+            <div className="total-card savings">
+              <div className="total-icon">
+                <FaPiggyBank />
+              </div>
+              <div className="total-content">
+                <h3>Ahorros</h3>
+                <p className="total-amount">${totalSavings.toLocaleString()}</p>
+              </div>
+            </div>
+            
+            <div className="total-card available">
+              <div className="total-icon">
+                <FaDollarSign />
+              </div>
+              <div className="total-content">
+                <h3>Dinero Disponible</h3>
+                <p className={`total-amount ${availableMoney >= 0 ? 'positive' : 'negative'}`}>
+                  ${availableMoney.toLocaleString()}
+                </p>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Sección 2: Tabla de registros */}
+      {/* Tabla */}
       <div className="table-section">
         <div className="table-container">
-          <div className="table-header">
-            <h2>Registros de Transacciones</h2>
-            <div className="totals-summary">
-              <div className="total-item income">
-                <span className="total-icon">💰</span>
-                <div className="total-info">
-                  <span className="total-label">Ingresos</span>
-                  <span className="total-amount">${getTotalByType('income').toLocaleString()}</span>
-                </div>
-              </div>
-              <div className="total-item expense">
-                <span className="total-icon">💸</span>
-                <div className="total-info">
-                  <span className="total-label">Gastos</span>
-                  <span className="total-amount">${getTotalByType('expense').toLocaleString()}</span>
-                </div>
-              </div>
-              <div className="total-item savings">
-                <span className="total-icon">🏦</span>
-                <div className="total-info">
-                  <span className="total-label">Ahorros</span>
-                  <span className="total-amount">${getTotalByType('savings').toLocaleString()}</span>
-                </div>
-              </div>
+          <h2>Historial de transacciones</h2>
+          {loading ? (
+            <div style={{ textAlign: 'center', padding: '40px' }}>
+              <FaSpinner className="fa-spin" style={{ fontSize: '24px', marginBottom: '10px' }} />
+              <p>Cargando transacciones...</p>
             </div>
-          </div>
-
-          <div className="table-wrapper">
+          ) : (
             <table className="transactions-table">
               <thead>
                 <tr>
@@ -434,51 +527,27 @@ const Expenses = () => {
                     </td>
                   </tr>
                 ) : (
-                  transactions.map((transaction) => (
-                    <tr key={transaction.id}>
+                  transactions.map(tx => (
+                    <tr key={tx.id}>
+                      <td>{getTypeIcon(tx.type)} {getTypeLabel(tx.type)}</td>
+                      <td>{tx.category_name || tx.category || 'Sin categoría'}</td>
+                      <td>{typeof tx.description === 'string' ? tx.description : (tx.description?.description || 'Sin descripción')}</td>
+                      <td>${parseFloat(tx.amount).toLocaleString()}</td>
+                      <td>{new Date(tx.date).toLocaleDateString('es-ES')}</td>
                       <td>
-                        <div className="type-cell">
-                          <span className="type-icon">{getTypeIcon(transaction.type)}</span>
-                          <span className="type-label">{getTypeLabel(transaction.type)}</span>
-                        </div>
-                      </td>
-                      <td>{transaction.category}</td>
-                      <td>{transaction.description}</td>
-                      <td>
-                        <span 
-                          className="amount-cell"
-                          style={{ color: getTypeColor(transaction.type) }}
-                        >
-                          {transaction.type === 'expense' ? '-' : '+'}${transaction.amount.toLocaleString()}
-                        </span>
-                      </td>
-                      <td>
-                        {new Date(transaction.date).toLocaleDateString('es-ES')}
-                      </td>
-                      <td>
-                        <div className="action-buttons">
-                          <button 
-                            className="action-btn edit-btn"
-                            onClick={() => handleEdit(transaction)}
-                            title="Editar"
-                          >
-                            <FaEdit />
-                          </button>
-                          <button 
-                            className="action-btn delete-btn"
-                            onClick={() => handleDelete(transaction.id)}
-                            title="Eliminar"
-                          >
-                            <FaTrash />
-                          </button>
-                        </div>
+                        <button className="action-btn edit-btn" onClick={() => handleEdit(tx)}>
+                          <FaEdit />
+                        </button>
+                        <button className="action-btn delete-btn" onClick={() => handleDelete(tx.id)}>
+                          <FaTrash />
+                        </button>
                       </td>
                     </tr>
                   ))
                 )}
               </tbody>
             </table>
-          </div>
+          )}
         </div>
       </div>
     </div>
